@@ -1,6 +1,8 @@
 package com.loanmanagement.config;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -8,36 +10,58 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // Placeholder only - should be replaced by Vandana
-    private final String secret = "tempSecretKey";
-    private final long expiration = 86400000; // 1 day
+    @Value("${jwt.secret}")
+    private String secret;
 
+    @Value("${jwt.expiration}")
+    private long expirationMs;
+
+    /**
+     * Generates a JWT token using username and role.
+     */
     public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    /**
+     * Extracts the username (subject) from the token.
+     */
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    /**
+     * Extracts the role from the token.
+     */
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    /**
+     * Validates if the token is well-formed and not expired.
+     */
     public boolean isTokenValid(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            extractAllClaims(token);
             return true;
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(secret)
+    /**
+     * Utility method to extract all claims.
+     */
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
-    
-    // TODO: To be implemented by Vandana
-
 }
