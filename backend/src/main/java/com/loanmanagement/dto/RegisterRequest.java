@@ -13,7 +13,4 @@ public class RegisterRequest {
 
     // 👇 Only required if role == ADMIN
     private String adminKey;
-    
-    // TODO: To be implemented by Vandana
-
 }
