@@ -1,4 +1,4 @@
-# 💰 Loan Management System 1 – Milestone: Backend Foundation and Database Setup
+# 💰 Loan Management System 1
 
 ## 👨‍💻 Team Members:
 - Golagana Vandana  
