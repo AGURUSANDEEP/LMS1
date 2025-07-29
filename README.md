@@ -82,10 +82,10 @@ npm install react-toastify react-icons
 
 ### ✅ Step 4: Start the development server
 ```bash
-npm run dev
+npm start
 ```
 
-🔗 **Frontend running at:** [http://localhost:5173](http://localhost:5173)
+🔗 **Frontend running at:** [http://localhost:3000](http://localhost:3000)
 
 ---
 
