@@ -1,53 +1,41 @@
 # Loan Management System 1 – Milestone: Backend Foundation and Database Setup
 
-**Team Members:**  
-- Golagana Vandana  
-- Potu Purna Sai  
-- Athikamsetti Janaki Ram  
-- Aguru Sandeep  
-
----
-
-# Loan Management System 1 – Milestone: Backend Foundation and Database Setup
-
-**Team Members:**  
-- Golagana Vandana  
-- Potu Purna Sai  
-- Athikamsetti Janaki Ram  
-- Aguru Sandeep  
-
----
 
 
-############################################################
-🚀 LOAN MANAGEMENT SYSTEM – FULL STACK SETUP GUIDE
-############################################################
+# Backend Foundation and Database Setup
 
-📁 PROJECT STRUCTURE:
+# 👨‍💻 Team Members:
+# - Golagana Vandana
+# - Potu Purna Sai
+# - Athikamsetti Janaki Ram
+# - Aguru Sandeep
 
-LoanManagementSystem/
-├── backend/       👉 Spring Boot (Java 21)
-└── frontend/      👉 React
 
-------------------------------------------------------------
-🔧 PREREQUISITES:
-------------------------------------------------------------
-✅ Java 21
-✅ Maven 3.8+
-✅ Node.js 18+
-✅ MySQL 8.x
+# 🚀 Full Stack Setup Guide
 
-------------------------------------------------------------
-🔙 BACKEND SETUP (Spring Boot)
-------------------------------------------------------------
+# 📁 Project Structure:
+# LoanManagementSystem/
+# ├── backend/       👉 Spring Boot (Java 21)
+# └── frontend/      👉 React (Vite + Tailwind)
+
+
+# 🔧 Prerequisites:
+# ✅ Java 21
+# ✅ Maven 3.8+
+# ✅ Node.js 18+
+# ✅ MySQL 8.x
+
+
+# 🔙 Backend Setup – Spring Boot
 
 # Step 1: Go to backend folder
 cd backend
 
-# Step 2: Configure application.properties
+# Step 2: Configure database in application.properties
 # File: src/main/resources/application.properties
 
-# --- Example DB Config (Edit accordingly) ---
+# Example:
+# ----------------------------------------
 # server.port=8081
 # spring.datasource.url=jdbc:mysql://localhost:3306/lms_db
 # spring.datasource.username=root
@@ -55,50 +43,46 @@ cd backend
 # spring.jpa.hibernate.ddl-auto=update
 # spring.jpa.show-sql=true
 # app.admin.secret=supersecretkey
+# ----------------------------------------
 
-# Step 3: Build and Run Spring Boot
+# Step 3: Build and run backend
 mvn clean install
 mvn spring-boot:run
 
-# Access backend on:
-http://localhost:8081
+# Access backend at:
+# http://localhost:8081
 
-------------------------------------------------------------
-🌐 FRONTEND SETUP (React + Vite + Tailwind)
-------------------------------------------------------------
+
+# 🌐 Frontend Setup – React + Vite + Tailwind
 
 # Step 1: Go to frontend folder
-cd frontend
+cd ../frontend
 
-# Step 2: Install core dependencies
+# Step 2: Install dependencies
 npm install
 
-# Step 3: Install additional packages used
+# Step 3: Install additional packages
 npm install react-toastify react-icons
 
 # Step 4: Start development server
 npm run dev
 
-# Access frontend on:
-http://localhost:5173
-
-------------------------------------------------------------
-🛠️ PROJECT FEATURES SUMMARY
-------------------------------------------------------------
-✅ User Login & Registration with role selection (Admin/Customer)
-✅ JWT-based Authentication
-✅ Role-based Dashboards
-✅ Protected Routes
-✅ Form validation & toast notifications
-✅ Admin key verification logic
-✅ Modular DTO + Config + Service + Controller structure
+# Access frontend at:
+# http://localhost:5173
 
 
+# 🛠️ Project Features Summary
+# ✅ User Login & Registration (Admin / Customer)
+# ✅ JWT Authentication
+# ✅ Role-based Dashboards
+# ✅ Protected Routes
+# ✅ Form Validations & Toast Alerts
+# ✅ Admin Key Verification
+# ✅ Clean Code Structure:
+#    - DTO
+#    - Config
+#    - Service
+#    - Controller
 
-------------------------------------------------------------
-✅ DONE! You are now ready to use the Loan Management System 🎉
-------------------------------------------------------------
 
-
-
-
+# ✅ DONE! You're now ready to use the Loan Management System 🎉
