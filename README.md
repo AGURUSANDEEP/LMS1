@@ -85,7 +85,7 @@ npm install react-toastify react-icons
 npm start
 ```
 
-🔗 **Frontend running at:** [http://localhost:5173](http://localhost:3000)
+🔗 **Frontend running at:** [http://localhost:3000](http://localhost:3000)
 
 ---
 
