@@ -153,6 +153,22 @@ npm start
 ### 🔐 5. Login Page
 ![Login](https://github.com/user-attachments/assets/4fd58cb8-2ba7-4f46-9878-54af08de27c2)
 
+### 🔐 6. Emi Calculator Feature
+
+The Loan Management System includes a built-in **EMI (Equated Monthly Installment) Calculator** accessible from the home page. Users can calculate estimated monthly payments based on:
+- Selected **loan type**
+- Desired **loan amount**
+- **Loan duration** in months or years
+
+It dynamically shows:
+- 💸 Monthly EMI
+- 📊 Interest rate based on loan type
+- 📈 Total payable amount and principal breakdown
+
+![Emi_Calculator](https://github.com/user-attachments/assets/762aa001-d409-4b99-b594-12ec64e826d0)
+
+This allows users to plan finances better before applying for any loan, enhancing the platform's usability and transparency.
+
 ---
 
 
