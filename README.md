@@ -63,7 +63,7 @@ mvn spring-boot:run
 
 ---
 
-## 🌐 Frontend Setup – React + Vite + Tailwind
+## 🌐 Frontend Setup – React
 
 ### ✅ Step 1: Navigate to the frontend folder
 ```bash
