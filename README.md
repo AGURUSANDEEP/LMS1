@@ -1,3 +1,4 @@
+
 # 💰 Loan Management System 1
 
 ## 👨‍💻 Team Members:
@@ -15,6 +16,14 @@
 LTIM_LMS_1_repo/
 ├── backend/       👉 Spring Boot (Java 21)
 └── frontend/      👉 React
+```
+
+---
+
+## 🔗 Clone the Repository
+```bash
+git clone https://github.com/Ft-Trumio/LTIM_LMS_1_repo.git
+cd LTIM_LMS_1_repo
 ```
 
 ---
@@ -46,11 +55,31 @@ Paste the following config:
 ```properties
 server.port=8081
 spring.datasource.url=jdbc:mysql://localhost:3306/lms_db
-spring.datasource.username=root
-spring.datasource.password=your_password
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-app.admin.secret=supersecretkey
+app.admin.secret=${ADMIN_SECRET}
+jwt.secret=${JWT_SECRET}
+jwt.expiration=${JWT_EXPIRATION}
+```
+
+Then, create a new file for secrets:
+
+#### 📁 `src/main/resources/application-secret.properties`
+```properties
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRATION=3600000  # (e.g., 1 hour in milliseconds)
+
+ADMIN_SECRET=supersecretkey
+```
+
+Make sure to include this secret file in your `application.properties`:
+```properties
+spring.config.import=application-secret.properties
 ```
 
 ### ✅ Step 3: Build and run the backend
@@ -98,13 +127,32 @@ npm start
 - ✅ Form Validation & Toast Notifications  
 - ✅ Admin Key Verification  
 - ✅ Clean Modular Code Structure:
-  ```
-  ├── DTO
-  ├── Config
-  ├── Service
-  └── Controller
-  ```
 
 ---
 
-✅ **DONE! You're now ready to use the Loan Management System 🎉**
+## 🖼️ Application UI Screenshots
+
+### 🏠 1. Home Page
+![Home](https://github.com/user-attachments/assets/5a2c0279-deaa-45b9-9c69-1756cdad3eae)
+
+### 💼 2. Loan Services Section
+![Loan Services](https://github.com/user-attachments/assets/98ecfe4e-58f7-409e-853e-23c955696a4f)
+
+### 📬 3. Contact Form Section
+![Contact Form](https://github.com/user-attachments/assets/8cf46a84-8969-4a40-a633-980b859ed698)
+
+### 📝 4. Registration Forms
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/97ae478c-d83d-42cf-95d6-c40e8f6ebbb4" width="100%"/></td>
+    <td><img src="https://github.com/user-attachments/assets/d182a273-a8bd-499b-b5e2-7efe4005234c" width="100%"/></td>
+  </tr>
+</table>
+
+### 🔐 5. Login Page
+![Login](https://github.com/user-attachments/assets/4fd58cb8-2ba7-4f46-9878-54af08de27c2)
+
+---
+
+
