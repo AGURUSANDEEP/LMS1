@@ -23,6 +23,26 @@ public class AuthService {
     @Value("${app.admin.secret}")
     private String adminSecret;
 
+    // ✅ NEW - Update password logic (for forgot password)
+    public void updatePassword(String username, String newPassword, String confirmPassword) {
+        if (username == null || username.trim().isEmpty())
+            throw new RuntimeException("Username is required");
+
+        if (newPassword == null || newPassword.length() < 8 || newPassword.length() > 30)
+            throw new RuntimeException("Password must be 8–30 characters long");
+
+        if (!newPassword.equals(confirmPassword))
+            throw new RuntimeException("Passwords do not match");
+
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+
+        System.out.println("🔁 Password updated for user: " + username);
+    }
+
     public void register(RegisterRequest request) {
         String email = request.getEmail().trim();
         String username = request.getUsername().trim();

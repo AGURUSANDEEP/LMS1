@@ -145,7 +145,7 @@ function Register() {
             <div className="left-column">
               <div className="input-group">
                 <label>Username</label>
-                <input name="username" value={form.username} onChange={handleChange} maxLength="30" required />
+                <input name="username" value={form.username} onChange={handleChange} required />
               </div>
               <div className="input-group">
                 <label>Email</label>
@@ -153,7 +153,7 @@ function Register() {
               </div>
               <div className="input-group">
                 <label>Full Name</label>
-                <input name="name" value={form.name} onChange={handleChange} maxLength="30" required />
+                <input name="name" value={form.name} onChange={handleChange} required />
               </div>
             </div>
 
@@ -166,24 +166,17 @@ function Register() {
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    maxLength="30"
                     required
                   />
                   <span className="eye-icon" onClick={() => setShowPassword((prev) => !prev)}>
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </span>
                 </div>
-                
-                
-                <small
-                  className="password-strength"
-                  style={{ color: form.password ? getStrengthColor() : "#999" }}
-                >
-                  {form.password ? `Password Strength: ${strength}` : ""}
-                </small>
-
-                
-                
+                {form.password && (
+                  <small style={{ color: getStrengthColor(), fontWeight: "bold" }}>
+                    Password Strength: {strength}
+                  </small>
+                )}
               </div>
 
               <div className="input-group password-group">
@@ -194,7 +187,6 @@ function Register() {
                     name="confirmPassword"
                     value={form.confirmPassword}
                     onChange={handleChange}
-                    maxLength="30"
                     required
                   />
                   <span className="eye-icon" onClick={() => setShowConfirm((prev) => !prev)}>
@@ -204,7 +196,7 @@ function Register() {
               </div>
 
               <div className="input-group">
-                <label className="auth-input-role">Role</label>
+                <label>Role</label>
                 <select className="auth-input" name="role" value={form.role} onChange={handleChange} required>
                   <option value="CUSTOMER">Customer</option>
                   <option value="ADMIN">Admin</option>
