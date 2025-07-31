@@ -4,6 +4,7 @@ import com.loanmanagement.config.JwtUtil;
 import com.loanmanagement.dto.AuthResponse;
 import com.loanmanagement.dto.LoginRequest;
 import com.loanmanagement.dto.RegisterRequest;
+import com.loanmanagement.dto.UpdatePasswordRequest; 
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.AuthService;
 
@@ -56,6 +57,17 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // ✅ POST /api/auth/update-password
+    @PostMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request) {
+        try {
+            authService.updatePassword(request.getUsername(), request.getNewPassword(), request.getConfirmPassword());
+            return ResponseEntity.ok(Map.of("message", "Password updated successfully!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 }
