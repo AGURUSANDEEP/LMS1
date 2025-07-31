@@ -4,7 +4,6 @@ import axios from "axios";
 
 const API = "http://localhost:8081/api/auth";
 
-// 🔐 Login function
 export const login = async ({ username, password }) => {
   const response = await axios.post(
     `${API}/login`,
@@ -19,14 +18,13 @@ export const login = async ({ username, password }) => {
   return response.data;
 };
 
-// 📝 Register function
 export const register = async ({
   name,
   email,
   username,
   password,
   role,
-  adminKey, // ✅ Accept adminKey from frontend
+  adminKey,
 }) => {
   const payload = {
     name,
@@ -36,7 +34,6 @@ export const register = async ({
     role,
   };
 
-  // ✅ Only include adminKey if role is ADMIN
   if (role === "ADMIN" && adminKey) {
     payload.adminKey = adminKey;
   }
@@ -47,6 +44,34 @@ export const register = async ({
     },
     withCredentials: true,
   });
+
+  return response.data;
+};
+
+/**
+ * 🔁 forgotPassword()
+ * --------------------------------------------
+ * Sends forgot password request to backend.
+ *
+ * 📤 Input:  { username, newPassword, confirmPassword }
+ * 🌐 POST:   /api/auth/update-password
+ * 📥 Output: { message } or error
+ */
+export const forgotPassword = async ({ username, newPassword, confirmPassword }) => {
+  const response = await axios.post(
+    `${API}/update-password`,
+    {
+      username,
+      newPassword,
+      confirmPassword,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    }
+  );
 
   return response.data;
 };

@@ -4,6 +4,7 @@ import com.loanmanagement.dto.*;
 import com.loanmanagement.model.User;
 import com.loanmanagement.repository.UserRepository;
 import com.loanmanagement.config.JwtUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,9 +20,28 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ Inject secret from application.properties
     @Value("${app.admin.secret}")
     private String adminSecret;
+
+    // ✅ NEW - Update password logic (for forgot password)
+    public void updatePassword(String username, String newPassword, String confirmPassword) {
+        if (username == null || username.trim().isEmpty())
+            throw new RuntimeException("Username is required");
+
+        if (newPassword == null || newPassword.length() < 8 || newPassword.length() > 30)
+            throw new RuntimeException("Password must be 8–30 characters long");
+
+        if (!newPassword.equals(confirmPassword))
+            throw new RuntimeException("Passwords do not match");
+
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+
+        System.out.println("🔁 Password updated for user: " + username);
+    }
 
     public void register(RegisterRequest request) {
         String email = request.getEmail().trim();
@@ -35,7 +55,6 @@ public class AuthService {
             throw new RuntimeException("Username already taken");
         }
 
-        // ✅ Validate admin key if role is ADMIN
         if (request.getRole() == User.Role.ADMIN) {
             if (request.getAdminKey() == null || !request.getAdminKey().trim().equals(adminSecret.trim())) {
                 System.out.println("🔑 Received Admin Key: '" + request.getAdminKey() + "'");
@@ -43,7 +62,6 @@ public class AuthService {
                 throw new RuntimeException("Invalid or missing Admin Secret Key");
             }
         }
-
 
         User user = User.builder()
                 .name(request.getName())
