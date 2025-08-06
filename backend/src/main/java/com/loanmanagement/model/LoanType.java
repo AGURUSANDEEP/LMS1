@@ -1,28 +1,56 @@
 package com.loanmanagement.model;
 
-// Enables ORM annotations like @Entity, @Id, @Table, etc.
 import jakarta.persistence.*;
-
-// Lombok for generating boilerplate code (getters, setters, etc.)
+import jakarta.validation.constraints.*;
 import lombok.*;
+import java.math.BigDecimal;
 
-@Entity // Marks this class as a JPA entity for DB mapping
-@Table(name = "loan_types") // Maps this entity to the "loan_types" table
-@Data // Generates getters, setters, toString, equals, and hashCode
-@NoArgsConstructor // Generates a no-argument constructor
-@AllArgsConstructor // Generates a constructor with all fields
-@Builder // Enables object creation using builder pattern
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Table(name = "loan_types")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LoanType {
 
-    @Id // Declares this field as the primary key
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Auto-generates loanTypeId using DB's auto-increment
     private Long loanTypeId;
 
-    private String name; // Name of the loan type (e.g., Home Loan, Personal Loan)
-    private double interestRate; // Interest rate applicable to this loan type
-    private String requirements; // Eligibility or required documents
-    private int maxTenureMonths; // Maximum allowed loan tenure in months
-    private double maxLoanAmount; // Maximum loan amount allowed
-    private double penaltyRatePercent; // Penalty rate (%) for late payments
+    @NotBlank(message = "Loan type name is required")
+    @Size(max = 100, message = "Loan type name cannot exceed 100 characters")
+    private String name;
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "Interest rate must be positive")
+    @DecimalMax(value = "15.0", message = "Interest rate cannot exceed 15 percent")
+    @Digits(integer = 3, fraction = 2, message = "Interest rate format invalid")
+    @Column(precision = 5, scale = 2)
+    private BigDecimal interestRate;
+
+    @Positive(message = "Max loans per customer must be greater than 0")
+    @Max(value = 3, message = "Max loans per customer cannot exceed 3")
+    private int maxLoansPerCustomerPerLoanType = 3; // default = 3
+
+
+    @Min(value = 1, message = "Maximum tenure years must be at least 1")
+    @Max(value = 30, message = "Maximum tenure years cannot exceed 30")
+    private int maxTenureYears;
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "Maximum loan amount must be positive")
+    @DecimalMax(value = "1000000000.00", message = "Maximum loan amount must not exceed ₹100 Cr")
+    @Column(precision = 15, scale = 2)
+    private BigDecimal maxLoanAmount;
+
+
+    @DecimalMin(value = "0.0", message = "Penalty rate cannot be negative")
+    @DecimalMax(value = "5.0", message = "Penalty rate cannot exceed 5 percent")
+    @Column(precision = 5, scale = 2)
+    private BigDecimal penaltyRatePercent;
+    
+    @OneToMany(mappedBy = "loanType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private java.util.List<Loan> loans;
+
 }

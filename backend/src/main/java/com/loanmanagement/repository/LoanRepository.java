@@ -1,12 +1,20 @@
 package com.loanmanagement.repository;
 
-// Imports the Loan entity for database operations
 import com.loanmanagement.model.Loan;
-
-// Spring Data JPA interface providing CRUD methods
+import com.loanmanagement.model.User;
+import com.loanmanagement.model.Loan.LoanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-// Repository interface for Loan entity with Long as ID type
+import java.util.List;
+
 public interface LoanRepository extends JpaRepository<Loan, Long> {
-    // No custom methods needed yet — inherits basic CRUD methods from JpaRepository
+
+    // 🔍 Find all loans belonging to a particular customer
+    List<Loan> findByCustomer(User customer);
+
+    // ✅ Count only approved loans for a customer
+    int countByCustomerAndLoanStatus(User customer, LoanStatus status);
+
+    // ✅ NEW: Count active loans grouped by type (for apply rule enforcement)
+    List<Loan> findByCustomerAndLoanStatusIn(User customer, List<LoanStatus> statuses);
 }
