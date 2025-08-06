@@ -43,12 +43,11 @@ public class LoanType {
     @Column(precision = 15, scale = 2)
     private BigDecimal maxLoanAmount;
 
-
     @DecimalMin(value = "0.0", message = "Penalty rate cannot be negative")
     @DecimalMax(value = "5.0", message = "Penalty rate cannot exceed 5 percent")
     @Column(precision = 5, scale = 2)
     private BigDecimal penaltyRatePercent;
-    
+
     @OneToMany(mappedBy = "loanType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private java.util.List<Loan> loans;
