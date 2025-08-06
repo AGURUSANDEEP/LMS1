@@ -12,7 +12,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../global/LogoutButton";
 import AdminProfile from "./AdminProfile";
-
+import AdminLoanList from "../loan/adminloan/AdminLoanList";
+import LoanTypeConfig from "../loan/adminloan/LoanTypeConfig";
+import InterestPenaltyConfig from "../loan/adminloan/InterestPenaltyConfig";
 
 import "../../styles/dashboard/Dashboard.css";
 
@@ -116,9 +118,9 @@ function AdminDashboard() {
       {/* Main Content */}
       <main className="dashboard-main">
         {activeSection === "profile" && <AdminProfile />}
-        {activeSection === "loanApplications" && <h2>📊 Welcome to loan applications</h2>}
-        {activeSection === "loanConfig" && <h2>📊 Welcome to loan config</h2>}
-        {activeSection === "interestPenalty" && <h2>📊 Welcome to interest config</h2>}
+        {activeSection === "loanApplications" && <AdminLoanList />}
+        {activeSection === "loanConfig" && <LoanTypeConfig />}
+        {activeSection === "interestPenalty" && <InterestPenaltyConfig />}
         {activeSection === "dashboard" && <h2>📊 Welcome to Admin Dashboard</h2>}
         {activeSection === "userManagement" && <h2>🧑‍💼 User Management Coming Soon</h2>}
         {activeSection === "reports" && <h2>📈 Reports & Analytics Coming Soon</h2>}

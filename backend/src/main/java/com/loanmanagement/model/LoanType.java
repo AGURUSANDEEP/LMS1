@@ -29,10 +29,10 @@ public class LoanType {
     @Column(precision = 5, scale = 2)
     private BigDecimal interestRate;
 
-    @Builder.Default
-    @Positive(message = "Max loans per customer must be greater than 0")
+    @Builder.Default // Lombok uses this default if not set in builder
+    @Min(value = 1, message = "Max loans per customer must be at least 1")
     @Max(value = 3, message = "Max loans per customer cannot exceed 3")
-    private int maxLoansPerCustomerPerLoanType = 3; // default = 3
+    private int maxLoansPerCustomerPerLoanType = 3;
 
     @Min(value = 1, message = "Maximum tenure years must be at least 1")
     @Max(value = 30, message = "Maximum tenure years cannot exceed 30")
@@ -43,12 +43,11 @@ public class LoanType {
     @Column(precision = 15, scale = 2)
     private BigDecimal maxLoanAmount;
 
-
     @DecimalMin(value = "0.0", message = "Penalty rate cannot be negative")
     @DecimalMax(value = "5.0", message = "Penalty rate cannot exceed 5 percent")
     @Column(precision = 5, scale = 2)
     private BigDecimal penaltyRatePercent;
-    
+
     @OneToMany(mappedBy = "loanType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private java.util.List<Loan> loans;
