@@ -14,7 +14,7 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
-    
+
     // ✅ Admin fetches own profile
     @GetMapping("/me")
     public UserProfileDto getOwnProfile(HttpServletRequest request) {
@@ -37,4 +37,7 @@ public class AdminController {
     public UserProfileDto updateOwnProfile(@RequestBody CustomerUpdateDto dto, HttpServletRequest request) {
         return adminService.updateOwnProfile(dto, request);
     }
+    
+
+
 }
