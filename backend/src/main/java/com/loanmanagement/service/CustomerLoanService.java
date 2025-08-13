@@ -1,6 +1,11 @@
 package com.loanmanagement.service;
 
+import com.loanmanagement.dto.LoanStatusHistoryDto;
+import com.loanmanagement.model.ApplicationStatusHistory;
+import com.loanmanagement.repository.ApplicationStatusHistoryRepository;
+
 import com.loanmanagement.dto.LoanRequestDto;
+import com.loanmanagement.dto.LoanTypeActiveCountDto;
 import com.loanmanagement.model.Loan;
 import com.loanmanagement.model.Loan.LoanStatus;
 import com.loanmanagement.model.LoanType;
@@ -10,7 +15,10 @@ import com.loanmanagement.repository.LoanTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomerLoanService {
@@ -20,6 +28,10 @@ public class CustomerLoanService {
 
     @Autowired
     private LoanTypeRepository loanTypeRepository;
+    
+    // Inject the repository
+    @Autowired
+    private ApplicationStatusHistoryRepository statusHistoryRepository;
 
     public Loan applyLoan(LoanRequestDto dto, User customer) {
         LoanType loanType = loanTypeRepository.findById(dto.getLoanTypeId())
@@ -97,5 +109,51 @@ public class CustomerLoanService {
                         java.util.stream.Collectors.reducing(0, e -> 1, Integer::sum)
                 ));
     }
+    
+    public List<LoanTypeActiveCountDto> getActiveLoanCountsDetailed(User customer) {
+        List<Loan> activeLoans = loanRepository.findByCustomerAndLoanStatusIn(
+            customer,
+            List.of(Loan.LoanStatus.SUBMITTED, Loan.LoanStatus.APPROVED)
+        );
+
+        Map<Long, LoanTypeActiveCountDto> map = new HashMap<>();
+
+        for (Loan loan : activeLoans) {
+            Long loanTypeId = loan.getLoanType().getLoanTypeId();
+            String loanTypeName = loan.getLoanType().getName();
+
+            map.compute(loanTypeId, (id, existing) -> {
+                if (existing == null) {
+                    return new LoanTypeActiveCountDto(loanTypeId, loanTypeName, 1);
+                } else {
+                    existing.setCount(existing.getCount() + 1);
+                    return existing;
+                }
+            });
+        }
+
+        return new ArrayList<>(map.values());
+    }
+    
+    public List<LoanStatusHistoryDto> getStatusHistoryByLoanId(Long loanId, User customer) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+
+        // Validate ownership
+        if (!loan.getCustomer().getUserId().equals(customer.getUserId())) {
+            throw new RuntimeException("Access denied for this loan");
+        }
+
+        List<ApplicationStatusHistory> historyList = statusHistoryRepository.findByLoanOrderByUpdatedAtAsc(loan);
+
+        return historyList.stream()
+                .map(h -> LoanStatusHistoryDto.builder()
+                        .status(h.getStatus().name())
+                        .comments(h.getComments())
+                        .updatedAt(h.getUpdatedAt())
+                        .build())
+                .toList();
+    }
+
 
 }
