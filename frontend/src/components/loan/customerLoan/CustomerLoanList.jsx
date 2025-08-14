@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom"; 
+
 import "../../../styles/loan/customerLoan/CustomerLoanList.css";
 
 import LoanDetailCard from "./LoanDetailCard";
@@ -50,6 +52,8 @@ function CustomerLoanList() {
   
 
   const [trackingLoan, setTrackingLoan] = useState(null);
+  
+  const navigate = useNavigate();
 
 
 
@@ -439,7 +443,13 @@ function CustomerLoanList() {
                         disabled={!(loan.loanStatus === "APPROVED" || loan.loanStatus === "CLOSED")}
                         onClick={() => {
                           if (loan.loanStatus === "APPROVED" || loan.loanStatus === "CLOSED") {
-                            console.log("Show EMI Schedule for", loan.referenceId);
+                            // Go to EMI & Payments page
+
+                            navigate("/customer/dashboard/emi", { state: { loanId: loan.id } });
+                            
+
+                            // If you want to auto-focus a specific loan there, use:
+                            // navigate("/customer/dashboard/emi", { state: { loanId: loan.id } });
                           }
                         }}
                       >
@@ -452,6 +462,7 @@ function CustomerLoanList() {
                         </span>
                       )}
                     </div>
+
 
                     
                     
