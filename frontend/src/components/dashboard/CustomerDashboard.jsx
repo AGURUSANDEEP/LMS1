@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { 
-  FaUser, 
-  FaMoneyBillAlt, 
-  FaFileAlt, 
-  FaSignOutAlt, 
-  FaCreditCard, 
-  FaIdBadge, 
-  FaComments   // ✅ New Chat icon
+
+import {
+  FaUser,
+  FaMoneyBillAlt,
+  FaFileAlt,
+  FaSignOutAlt,
+  FaCreditCard,
+  FaIdBadge,
+  FaComments,
+
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../global/LogoutButton";
 import CustomerProfile from "./CustomerProfile";
-import ApplyLoanForm from "../loan/customerLoan/ApplyLoanForm";  // <-- Import here
+import ApplyLoanForm from "../loan/customerLoan/ApplyLoanForm";
 import CustomerLoanList from "../loan/customerLoan/CustomerLoanList";
+import CustomerChat from "../chat/CustomerChat";
 
 
 import "../../styles/dashboard/Dashboard.css";
@@ -21,24 +24,67 @@ import "../../styles/dashboard/Dashboard.css";
 function CustomerDashboard() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("dashboard");
-  const [user, setUser] = useState({ name: "" });
+
+  // User info for main dashboard features
+  const [customerUser, setCustomerUser] = useState({ name: "" });
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  // User info for chat support features
+  const [chatUser, setChatUser] = useState({ userId: null });
+
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
-  const toggleSidebar = () => setSidebarVisible(prev => !prev);
+  const toggleSidebar = () => setSidebarVisible((prev) => !prev);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) navigate("/login");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
+    // Fetch main customer user info
     fetch("http://localhost:8081/api/customer/me", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.json())
-      .then((data) => setUser(data))
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch customer user");
+        return res.json();
+      })
+      .then((data) => {
+        setCustomerUser(data);
+        setLoadingUser(false);
+      })
       .catch(() => navigate("/login"));
+
+    // Fetch chat user info
+    fetch("http://localhost:8081/api/chat/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch chat user");
+        return res.json();
+      })
+      .then((data) => setChatUser(data))
+      .catch(() => {
+        // Optional: Handle chat fetch failure without redirecting
+        console.warn("Failed to fetch chat user info");
+      });
   }, [navigate]);
+
+  if (loadingUser) {
+    return (
+      <div className="dashboard-container">
+        <p style={{ textAlign: "center", marginTop: "2rem" }}>
+          Loading user information...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
@@ -58,7 +104,7 @@ function CustomerDashboard() {
         <div className="dashboard-user-info">
           <FaUser size={42} className="dashboard-user-icon" />
           <p>Welcome,</p>
-          <h3>{user.name}</h3>
+          <h3>{customerUser.name}</h3>
           <hr className="dashboard-divider" />
         </div>
 
@@ -110,23 +156,21 @@ function CustomerDashboard() {
 
       {/* Main Section */}
       <main className="dashboard-main">
-        {activeSection === "profile" && <CustomerProfile />}
-        {activeSection === "apply" && <ApplyLoanForm />}
-        {/* Keeping others commented for future */}
-        {/* {activeSection === "dashboard" && <DashboardHome />} */}
-        {activeSection === "dashboard" && <h2>📈 dahsboards & Analytics Coming Soon</h2>}
-                
+
+        {activeSection === "dashboard" && (
+          <h2>📈 Dashboard & Analytics Coming Soon</h2>
+        )}
         {activeSection === "applications" && <CustomerLoanList />}
-
-
-        {/* {activeSection === "payments" && <EMIPayments />} */}
+        {activeSection === "apply" && <ApplyLoanForm />}
+        
         {activeSection === "payments" && <h2>EMI & Payments Coming Soon</h2>}
-        
-        
-        {/* {activeSection === "chatSupport" && <chatSupport />} */}
-        {activeSection === "chatSupport" && <h2>Chat Support Coming Soon</h2>}
+        {activeSection === "profile" && <CustomerProfile />}
+        {activeSection === "chatSupport" && chatUser.userId ? (
+          <CustomerChat customerId={chatUser.userId} />
+        ) : activeSection === "chatSupport" ? (
+          <p>Loading chat support...</p>
+        ) : null}
 
-        
       </main>
     </div>
   );
