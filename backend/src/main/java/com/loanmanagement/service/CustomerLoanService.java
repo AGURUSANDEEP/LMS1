@@ -34,6 +34,7 @@ public class CustomerLoanService {
     @Autowired
     private ApplicationStatusHistoryRepository statusHistoryRepository;
 
+
     public Loan applyLoan(LoanRequestDto dto, User customer) {
         LoanType loanType = loanTypeRepository.findById(dto.getLoanTypeId())
                 .orElseThrow(() -> new RuntimeException("Loan Type not found"));
