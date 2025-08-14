@@ -1,5 +1,6 @@
 // src/components/dashboard/CustomerDashboard.jsx
 
+
 import React, { useEffect, useState } from "react";
 import {
   FaUser,
@@ -11,6 +12,7 @@ import {
   FaComments,
 } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+
 
 import LogoutButton from "../global/LogoutButton";
 import CustomerProfile from "./CustomerProfile";
@@ -155,19 +157,23 @@ function CustomerDashboard() {
 
       {/* Main Section */}
       <main className="dashboard-main">
+
         {activeSection === "dashboard" && (
           <CustomerDashboardMain
             activeSection={activeSection}
             setActiveSection={setActiveSection}
           />
         )}
+
         {activeSection === "applications" && <CustomerLoanList />}
         {activeSection === "apply" && <ApplyLoanForm />}
         {activeSection === "payments" && <EmiPaymentsPage />}
         {activeSection === "profile" && <CustomerProfile />}
+
         {activeSection === "chatSupport" && (
           chatUser.userId ? <CustomerChat customerId={chatUser.userId} /> : <p>Loading chat support...</p>
         )}
+
       </main>
     </div>
   );

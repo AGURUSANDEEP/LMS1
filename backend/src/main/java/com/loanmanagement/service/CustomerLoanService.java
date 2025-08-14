@@ -35,6 +35,7 @@ public class CustomerLoanService {
     @Autowired
     private LoanTypeRepository loanTypeRepository;
 
+
     @Autowired
     private ApplicationStatusHistoryRepository statusHistoryRepository;
 
@@ -42,6 +43,7 @@ public class CustomerLoanService {
     private EmiPaymentRepository emiPaymentRepository;
 
     private final MailService mailService;
+
 
     public Loan applyLoan(LoanRequestDto dto, User customer) {
         LoanType loanType = loanTypeRepository.findById(dto.getLoanTypeId())
@@ -127,6 +129,7 @@ public class CustomerLoanService {
         return new ArrayList<>(map.values());
     }
 
+
     public List<LoanStatusHistoryDto> getStatusHistoryByLoanId(Long loanId, User customer) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
@@ -182,6 +185,8 @@ public class CustomerLoanService {
         EmiPayment emi = emiPaymentRepository.findById(emiId)
                 .orElseThrow(() -> new RuntimeException("EMI not found"));
 
+
+
         // ownership
         if (!emi.getLoan().getCustomer().getUserId().equals(customer.getUserId())) {
             throw new RuntimeException("Unauthorized access to this EMI");
@@ -190,6 +195,7 @@ public class CustomerLoanService {
         if (emi.getStatus() != EmiPayment.EmiStatus.PENDING) {
             throw new RuntimeException("EMI is not pending or already paid");
         }
+
 
         // mark paid
         emi.setStatus(EmiPayment.EmiStatus.PAID);
@@ -221,6 +227,52 @@ public class CustomerLoanService {
                 mailService.sendLoanClosedText(loan, totalRepayable);
             } catch (Exception ignore) {}
         }
+
+        return saved;
+    }
+
+
+        // ownership
+        if (!emi.getLoan().getCustomer().getUserId().equals(customer.getUserId())) {
+            throw new RuntimeException("Unauthorized access to this EMI");
+        }
+        // status
+        if (emi.getStatus() != EmiPayment.EmiStatus.PENDING) {
+            throw new RuntimeException("EMI is not pending or already paid");
+        }
+
+
+        // mark paid
+        emi.setStatus(EmiPayment.EmiStatus.PAID);
+        emi.setPaymentDate(java.time.LocalDate.now());
+        emi.setTransactionRef(java.util.UUID.randomUUID().toString());
+
+        // save first
+        EmiPayment saved = emiPaymentRepository.save(emi);
+
+        // 🔔 send plain-text payment receipt (non-blocking try/catch)
+        try { mailService.sendEmiPaidText(saved); } catch (Exception ignore) {}
+
+        // 🔒 If no more PENDING EMIs, close the loan
+        Loan loan = saved.getLoan();
+        long pendingLeft = emiPaymentRepository.countByLoanAndStatus(loan, EmiPayment.EmiStatus.PENDING);
+        if (pendingLeft == 0) {
+            loan.setLoanStatus(LoanStatus.CLOSED);
+            loan.setClosedAt(LocalDateTime.now());
+            loanRepository.save(loan);
+
+            // compute totals for closure email: total repayable = sum of all EMIs
+            try {
+                List<EmiPayment> allEmis = emiPaymentRepository.findByLoanOrderByDueDateAsc(loan);
+                BigDecimal totalRepayable = allEmis.stream()
+                        .map(EmiPayment::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                mailService.sendLoanClosedText(loan, totalRepayable);
+            } catch (Exception ignore) {}
+        }
+
 
         return saved;
     }

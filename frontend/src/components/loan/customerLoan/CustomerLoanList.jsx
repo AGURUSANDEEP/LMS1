@@ -54,6 +54,7 @@ function CustomerLoanList() {
 
 
 
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch("http://localhost:8081/api/customer/loans", {
