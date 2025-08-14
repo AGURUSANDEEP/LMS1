@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import {
   FaUser,
   FaMoneyBillAlt,
@@ -7,13 +8,16 @@ import {
   FaCreditCard,
   FaIdBadge,
   FaComments,
+
 } from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../global/LogoutButton";
 import CustomerProfile from "./CustomerProfile";
 import ApplyLoanForm from "../loan/customerLoan/ApplyLoanForm";
 import CustomerLoanList from "../loan/customerLoan/CustomerLoanList";
 import CustomerChat from "../chat/CustomerChat";
+
 
 import "../../styles/dashboard/Dashboard.css";
 
@@ -142,6 +146,7 @@ function CustomerDashboard() {
           >
             <FaComments /> Chat Support
           </button>
+
         </nav>
 
         <div className="dashboard-logout">
@@ -151,6 +156,7 @@ function CustomerDashboard() {
 
       {/* Main Section */}
       <main className="dashboard-main">
+
         {activeSection === "dashboard" && (
           <h2>📈 Dashboard & Analytics Coming Soon</h2>
         )}
@@ -164,6 +170,7 @@ function CustomerDashboard() {
         ) : activeSection === "chatSupport" ? (
           <p>Loading chat support...</p>
         ) : null}
+
       </main>
     </div>
   );
