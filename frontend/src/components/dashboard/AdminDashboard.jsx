@@ -15,8 +15,10 @@ import AdminProfile from "./AdminProfile";
 import AdminLoanList from "../loan/adminloan/AdminLoanList";
 import LoanTypeConfig from "../loan/adminloan/LoanTypeConfig";
 import InterestPenaltyConfig from "../loan/adminloan/InterestPenaltyConfig";
+
 import AdminChat from "../chat/AdminChat";
 import UserManagementPage from "../loan/adminloan/UserManagementPage";
+
 
 import "../../styles/dashboard/Dashboard.css";
 
@@ -148,11 +150,13 @@ function AdminDashboard() {
         {activeSection === "loanConfig" && <LoanTypeConfig />}
         {activeSection === "interestPenalty" && <InterestPenaltyConfig />}
         {activeSection === "dashboard" && <h2>📊 Welcome to Admin Dashboard</h2>}
+
         {activeSection === "userManagement" && <UserManagementPage />}
         
         {activeSection === "viewChats" && (
           <AdminChat adminId={chatUser.userId} />
         )}
+
       </main>
     </div>
   );

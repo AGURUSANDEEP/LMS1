@@ -35,6 +35,7 @@ public class CustomerLoanService {
     @Autowired
     private LoanTypeRepository loanTypeRepository;
 
+
     @Autowired
     private ApplicationStatusHistoryRepository statusHistoryRepository;
 
@@ -42,6 +43,7 @@ public class CustomerLoanService {
     private EmiPaymentRepository emiPaymentRepository;
 
     private final MailService mailService;
+
 
     public Loan applyLoan(LoanRequestDto dto, User customer) {
         LoanType loanType = loanTypeRepository.findById(dto.getLoanTypeId())
@@ -127,6 +129,7 @@ public class CustomerLoanService {
         return new ArrayList<>(map.values());
     }
 
+
     public List<LoanStatusHistoryDto> getStatusHistoryByLoanId(Long loanId, User customer) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
@@ -191,6 +194,7 @@ public class CustomerLoanService {
             throw new RuntimeException("EMI is not pending or already paid");
         }
 
+
         // mark paid
         emi.setStatus(EmiPayment.EmiStatus.PAID);
         emi.setPaymentDate(java.time.LocalDate.now());
@@ -224,4 +228,5 @@ public class CustomerLoanService {
 
         return saved;
     }
+
 }
