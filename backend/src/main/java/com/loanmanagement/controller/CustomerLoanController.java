@@ -76,6 +76,7 @@ public class CustomerLoanController {
         return ResponseEntity.ok(loanService.getActiveLoanCountsDetailed(customer));
     }
     
+
     @GetMapping("/{loanId}/status-history")
     public ResponseEntity<List<LoanStatusHistoryDto>> getStatusHistory(
             @PathVariable Long loanId,
@@ -85,6 +86,7 @@ public class CustomerLoanController {
         List<LoanStatusHistoryDto> history = loanService.getStatusHistoryByLoanId(loanId, customer);
         return ResponseEntity.ok(history);
     }
+
 
 
 }
