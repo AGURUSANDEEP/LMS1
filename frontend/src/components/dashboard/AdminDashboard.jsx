@@ -18,8 +18,10 @@ import AdminProfile from "./AdminProfile";
 import AdminLoanList from "../loan/adminloan/AdminLoanList";
 import LoanTypeConfig from "../loan/adminloan/LoanTypeConfig";
 import InterestPenaltyConfig from "../loan/adminloan/InterestPenaltyConfig";
+
 import UserManagementPage from "../loan/adminloan/UserManagementPage";
 import AdminDashboardMain from "./AdminDashboardMain";
+
 
 import AdminChat from "../chat/AdminChat";
 
@@ -133,7 +135,9 @@ function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
+
       <main className="dashboard-main">{renderMainContent()}</main>
+
     </div>
   );
 }
