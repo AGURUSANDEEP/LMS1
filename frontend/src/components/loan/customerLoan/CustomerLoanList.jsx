@@ -4,6 +4,9 @@ import "../../../styles/loan/customerLoan/CustomerLoanList.css";
 
 import LoanDetailCard from "./LoanDetailCard";
 
+import TrackStatusCard from "./TrackStatusCard";
+
+
 import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -43,6 +46,8 @@ function CustomerLoanList() {
   
   const [loanTypes, setLoanTypes] = useState([]);
   
+
+  const [trackingLoan, setTrackingLoan] = useState(null);
 
 
 
@@ -203,7 +208,9 @@ function CustomerLoanList() {
     
     <div className="loan-page-wrapper">
       
-      {!selectedLoan && (
+
+      {!selectedLoan && !trackingLoan && (
+
         <button
           className="toggle-filters-btn"
           onClick={() => setShowFilters(prev => !prev)}
@@ -416,7 +423,9 @@ function CustomerLoanList() {
                     {/* Track Status */}
                     <button
                       className="track-btn"
-                      
+
+                      onClick={() => setTrackingLoan(loan)}
+
                     >
                       Track Status
                     </button>
@@ -473,7 +482,19 @@ function CustomerLoanList() {
         </div>
       )}
       
-      
+
+      {/* 📍 Track Status Modal */}
+      {trackingLoan && (
+        <div className="loan-modal-overlay" onClick={() => setTrackingLoan(null)}>
+          <div className="loan-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-icon" onClick={() => setTrackingLoan(null)}>
+              <FaTimes size={18} />
+            </button>
+            <TrackStatusCard loan={trackingLoan} />
+          </div>
+        </div>
+      )}
+
 
 
       

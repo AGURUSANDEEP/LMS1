@@ -5,9 +5,9 @@ import {
   FaFileAlt,
   FaMoneyBillWave,
   FaCogs,
-  FaChartLine,
   FaAddressCard,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaEnvelope
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../global/LogoutButton";
@@ -15,22 +15,31 @@ import AdminProfile from "./AdminProfile";
 import AdminLoanList from "../loan/adminloan/AdminLoanList";
 import LoanTypeConfig from "../loan/adminloan/LoanTypeConfig";
 import InterestPenaltyConfig from "../loan/adminloan/InterestPenaltyConfig";
-import UserManagementPage from "../loan/adminloan/UserManagementPage"; // ✅ Import new page
+
+import AdminChat from "../chat/AdminChat";
+import UserManagementPage from "../loan/adminloan/UserManagementPage";
+
 
 import "../../styles/dashboard/Dashboard.css";
 
 function AdminDashboard() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("dashboard");
-  const [user, setUser] = useState({ name: "" });
+
+  // Separate state for admin user info (name, etc.)
+  const [adminUser, setAdminUser] = useState({ name: "" });
+  // Separate state for chat user info (for userId)
+  const [chatUser, setChatUser] = useState({ userId: null });
+
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
-  const toggleSidebar = () => setSidebarVisible(prev => !prev);
+  const toggleSidebar = () => setSidebarVisible((prev) => !prev);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
 
+    // Fetch admin user info for main dashboard
     fetch("http://localhost:8081/api/admin/me", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -40,8 +49,24 @@ function AdminDashboard() {
         if (!res.ok) throw new Error("Unauthorized");
         return res.json();
       })
-      .then((data) => setUser(data))
+      .then((data) => setAdminUser(data))
       .catch(() => navigate("/login"));
+
+    // Fetch chat user info separately for chat functionality
+    fetch("http://localhost:8081/api/chat/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => setChatUser(data))
+      .catch(() => {
+        // Optional: You can decide whether to navigate away on chat fetch failure or not
+        console.warn("Chat user info fetch failed");
+      });
   }, [navigate]);
 
   return (
@@ -62,7 +87,7 @@ function AdminDashboard() {
         <div className="dashboard-user-info">
           <FaUser size={42} className="dashboard-user-icon" />
           <p>Welcome,</p>
-          <h3>{user.name}</h3>
+          <h3>{adminUser.name}</h3>
           <hr className="dashboard-divider" />
         </div>
 
@@ -97,17 +122,19 @@ function AdminDashboard() {
           >
             <FaCogs /> Loan Type Configuration
           </button>
-          <button
-            className={activeSection === "reports" ? "active" : ""}
-            onClick={() => setActiveSection("reports")}
-          >
-            <FaChartLine /> Reports & Analytics
-          </button>
+          
           <button
             className={activeSection === "profile" ? "active" : ""}
             onClick={() => setActiveSection("profile")}
           >
             <FaAddressCard /> My Profile
+          </button>
+          {/* View Chats button */}
+          <button
+            className={activeSection === "viewChats" ? "active" : ""}
+            onClick={() => setActiveSection("viewChats")}
+          >
+            <FaEnvelope /> View Chats
           </button>
         </nav>
 
@@ -123,8 +150,13 @@ function AdminDashboard() {
         {activeSection === "loanConfig" && <LoanTypeConfig />}
         {activeSection === "interestPenalty" && <InterestPenaltyConfig />}
         {activeSection === "dashboard" && <h2>📊 Welcome to Admin Dashboard</h2>}
-        {activeSection === "userManagement" && <UserManagementPage />} {/* ✅ New Page */}
-        {activeSection === "reports" && <h2>📈 Reports & Analytics Coming Soon</h2>}
+
+        {activeSection === "userManagement" && <UserManagementPage />}
+        
+        {activeSection === "viewChats" && (
+          <AdminChat adminId={chatUser.userId} />
+        )}
+
       </main>
     </div>
   );
