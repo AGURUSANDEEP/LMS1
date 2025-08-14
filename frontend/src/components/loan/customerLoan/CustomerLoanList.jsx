@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import "../../../styles/loan/customerLoan/CustomerLoanList.css";
 
 import LoanDetailCard from "./LoanDetailCard";
+import TrackStatusCard from "./TrackStatusCard";
+
 
 import TrackStatusCard from "./TrackStatusCard";
 
@@ -494,6 +496,7 @@ function CustomerLoanList() {
           </div>
         </div>
       )}
+
 
 
 
