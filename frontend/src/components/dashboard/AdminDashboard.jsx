@@ -22,8 +22,8 @@ import InterestPenaltyConfig from "../loan/adminloan/InterestPenaltyConfig";
 import UserManagementPage from "../loan/adminloan/UserManagementPage";
 import AdminDashboardMain from "./AdminDashboardMain";
 
-import AdminChat from "../chat/AdminChat";
 
+import AdminChat from "../chat/AdminChat";
 
 import "../../styles/dashboard/Dashboard.css";
 

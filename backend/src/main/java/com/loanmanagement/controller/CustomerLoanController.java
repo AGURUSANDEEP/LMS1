@@ -1,9 +1,7 @@
 package com.loanmanagement.controller;
 
 import com.loanmanagement.dto.LoanRequestDto;
-
 import com.loanmanagement.dto.LoanStatusHistoryDto;
-
 import com.loanmanagement.dto.LoanTypeActiveCountDto;
 import com.loanmanagement.dto.LoanWithEmiDto;
 import com.loanmanagement.model.EmiPayment;
@@ -78,7 +76,6 @@ public class CustomerLoanController {
         return ResponseEntity.ok(loanService.getActiveLoanCountsDetailed(customer));
     }
     
-
     @GetMapping("/{loanId}/status-history")
     public ResponseEntity<List<LoanStatusHistoryDto>> getStatusHistory(
             @PathVariable Long loanId,
