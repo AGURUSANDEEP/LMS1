@@ -18,6 +18,7 @@ import ApplyLoanForm from "../loan/customerLoan/ApplyLoanForm";
 import CustomerLoanList from "../loan/customerLoan/CustomerLoanList";
 import EmiPaymentsPage from "../emi/EmiPaymentsPage";
 import CustomerChat from "../chat/CustomerChat";
+import CustomerDashboardMain from "./CustomerDashboardMain"; // ✅ NEW
 
 import "../../styles/dashboard/Dashboard.css";
 
@@ -154,7 +155,12 @@ function CustomerDashboard() {
 
       {/* Main Section */}
       <main className="dashboard-main">
-        {activeSection === "dashboard" &&  <h2>Dashboard is coming soon</h2>}
+        {activeSection === "dashboard" && (
+          <CustomerDashboardMain
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+        )}
         {activeSection === "applications" && <CustomerLoanList />}
         {activeSection === "apply" && <ApplyLoanForm />}
         {activeSection === "payments" && <EmiPaymentsPage />}
