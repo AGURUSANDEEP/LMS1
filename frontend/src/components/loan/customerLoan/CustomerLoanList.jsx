@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom"; 
+
 import "../../../styles/loan/customerLoan/CustomerLoanList.css";
 
 import LoanDetailCard from "./LoanDetailCard";
-import TrackStatusCard from "./TrackStatusCard";
-
-
 import TrackStatusCard from "./TrackStatusCard";
 
 
@@ -48,9 +47,9 @@ function CustomerLoanList() {
   
   const [loanTypes, setLoanTypes] = useState([]);
   
-
   const [trackingLoan, setTrackingLoan] = useState(null);
-
+  
+  const navigate = useNavigate();
 
 
 
@@ -210,9 +209,7 @@ function CustomerLoanList() {
     
     <div className="loan-page-wrapper">
       
-
       {!selectedLoan && !trackingLoan && (
-
         <button
           className="toggle-filters-btn"
           onClick={() => setShowFilters(prev => !prev)}
@@ -425,9 +422,7 @@ function CustomerLoanList() {
                     {/* Track Status */}
                     <button
                       className="track-btn"
-
                       onClick={() => setTrackingLoan(loan)}
-
                     >
                       Track Status
                     </button>
@@ -439,7 +434,13 @@ function CustomerLoanList() {
                         disabled={!(loan.loanStatus === "APPROVED" || loan.loanStatus === "CLOSED")}
                         onClick={() => {
                           if (loan.loanStatus === "APPROVED" || loan.loanStatus === "CLOSED") {
-                            console.log("Show EMI Schedule for", loan.referenceId);
+                            // Go to EMI & Payments page
+
+                            navigate("/customer/dashboard/emi", { state: { loanId: loan.id } });
+                            
+
+                            // If you want to auto-focus a specific loan there, use:
+                            // navigate("/customer/dashboard/emi", { state: { loanId: loan.id } });
                           }
                         }}
                       >
@@ -452,6 +453,7 @@ function CustomerLoanList() {
                         </span>
                       )}
                     </div>
+
 
                     
                     
@@ -484,7 +486,6 @@ function CustomerLoanList() {
         </div>
       )}
       
-
       {/* 📍 Track Status Modal */}
       {trackingLoan && (
         <div className="loan-modal-overlay" onClick={() => setTrackingLoan(null)}>
@@ -496,8 +497,6 @@ function CustomerLoanList() {
           </div>
         </div>
       )}
-
-
 
 
       
