@@ -96,7 +96,11 @@ public class CustomerLoanController {
         return ResponseEntity.ok(loanService.getLoanWithEmis(loanId));
     }
 
-
+    @PostMapping("/emi/pay/{emiId}")
+    public ResponseEntity<EmiPayment> payEmi(@PathVariable Long emiId, HttpServletRequest request) {
+        User customer = getAuthenticatedCustomer(request);
+        return ResponseEntity.ok(loanService.payEmi(emiId, customer));
+    }
 
     // ✅ Pay EMI endpoint (triggers email via service)
     @PostMapping("/emi/pay/{emiId}")
