@@ -158,7 +158,12 @@ function CustomerDashboard() {
       {/* Main Section */}
       <main className="dashboard-main">
 
-        {activeSection === "dashboard" &&  <h2>Dashboard is coming soon</h2>}
+        {activeSection === "dashboard" && (
+          <CustomerDashboardMain
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+        )}
 
         {activeSection === "applications" && <CustomerLoanList />}
         {activeSection === "apply" && <ApplyLoanForm />}
