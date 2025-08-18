@@ -69,13 +69,13 @@ public class CustomerLoanController {
         User customer = getAuthenticatedCustomer(request);
         return ResponseEntity.ok(loanService.getActiveLoanCounts(customer));
     }
-    
+
     @GetMapping("/active-loan-counts-detailed")
     public ResponseEntity<List<LoanTypeActiveCountDto>> getActiveLoanCountsDetailed(HttpServletRequest request) {
         User customer = getAuthenticatedCustomer(request);
         return ResponseEntity.ok(loanService.getActiveLoanCountsDetailed(customer));
     }
-    
+
     @GetMapping("/{loanId}/status-history")
     public ResponseEntity<List<LoanStatusHistoryDto>> getStatusHistory(
             @PathVariable Long loanId,
@@ -84,19 +84,13 @@ public class CustomerLoanController {
         List<LoanStatusHistoryDto> history = loanService.getStatusHistoryByLoanId(loanId, customer);
         return ResponseEntity.ok(history);
     }
-    
+
     @GetMapping("/emi/{loanId}")
     public ResponseEntity<LoanWithEmiDto> getLoanWithEmis(@PathVariable Long loanId, HttpServletRequest request) {
         User customer = getAuthenticatedCustomer(request);
         // validate ownership
         loanService.getLoanByIdForCustomer(loanId, customer);
         return ResponseEntity.ok(loanService.getLoanWithEmis(loanId));
-    }
-
-    @PostMapping("/emi/pay/{emiId}")
-    public ResponseEntity<EmiPayment> payEmi(@PathVariable Long emiId, HttpServletRequest request) {
-        User customer = getAuthenticatedCustomer(request);
-        return ResponseEntity.ok(loanService.payEmi(emiId, customer));
     }
 
     // ✅ Pay EMI endpoint (triggers email via service)

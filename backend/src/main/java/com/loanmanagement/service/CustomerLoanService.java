@@ -35,7 +35,6 @@ public class CustomerLoanService {
     @Autowired
     private LoanTypeRepository loanTypeRepository;
 
-
     @Autowired
     private ApplicationStatusHistoryRepository statusHistoryRepository;
 
@@ -44,13 +43,14 @@ public class CustomerLoanService {
 
     private final MailService mailService;
 
-
     public Loan applyLoan(LoanRequestDto dto, User customer) {
         LoanType loanType = loanTypeRepository.findById(dto.getLoanTypeId())
                 .orElseThrow(() -> new RuntimeException("Loan Type not found"));
 
-        if (dto.getLoanAmount() == null) throw new RuntimeException("Loan amount is required");
-        if (dto.getLoanDuration() <= 0) throw new RuntimeException("Loan duration must be positive");
+        if (dto.getLoanAmount() == null)
+            throw new RuntimeException("Loan amount is required");
+        if (dto.getLoanDuration() <= 0)
+            throw new RuntimeException("Loan duration must be positive");
         if (dto.getLoanPurpose() == null || dto.getLoanPurpose().trim().isEmpty())
             throw new RuntimeException("Loan purpose is required");
         if ("Student".equals(dto.getEmploymentInfo()) && !"N/A".equals(dto.getIncome()))
@@ -94,21 +94,18 @@ public class CustomerLoanService {
     public Map<Long, Integer> getActiveLoanCounts(User customer) {
         List<Loan> activeLoans = loanRepository.findByCustomerAndLoanStatusIn(
                 customer,
-                List.of(LoanStatus.SUBMITTED, LoanStatus.APPROVED)
-        );
+                List.of(LoanStatus.SUBMITTED, LoanStatus.APPROVED));
 
         return activeLoans.stream()
                 .collect(java.util.stream.Collectors.groupingBy(
                         loan -> loan.getLoanType().getLoanTypeId(),
-                        java.util.stream.Collectors.reducing(0, e -> 1, Integer::sum)
-                ));
+                        java.util.stream.Collectors.reducing(0, e -> 1, Integer::sum)));
     }
 
     public List<LoanTypeActiveCountDto> getActiveLoanCountsDetailed(User customer) {
         List<Loan> activeLoans = loanRepository.findByCustomerAndLoanStatusIn(
                 customer,
-                List.of(Loan.LoanStatus.SUBMITTED, Loan.LoanStatus.APPROVED)
-        );
+                List.of(Loan.LoanStatus.SUBMITTED, Loan.LoanStatus.APPROVED));
 
         Map<Long, LoanTypeActiveCountDto> map = new HashMap<>();
 
@@ -128,7 +125,6 @@ public class CustomerLoanService {
 
         return new ArrayList<>(map.values());
     }
-
 
     public List<LoanStatusHistoryDto> getStatusHistoryByLoanId(Long loanId, User customer) {
         Loan loan = loanRepository.findById(loanId)
@@ -175,8 +171,7 @@ public class CustomerLoanService {
                 loan.getTenureYears(),
                 remainingEmis,
                 remainingAmount,
-                emis
-        );
+                emis);
     }
 
     // ✅ Pay EMI + auto-close loan when last EMI paid (also email loan closure)
@@ -185,8 +180,6 @@ public class CustomerLoanService {
         EmiPayment emi = emiPaymentRepository.findById(emiId)
                 .orElseThrow(() -> new RuntimeException("EMI not found"));
 
-
-
         // ownership
         if (!emi.getLoan().getCustomer().getUserId().equals(customer.getUserId())) {
             throw new RuntimeException("Unauthorized access to this EMI");
@@ -195,7 +188,6 @@ public class CustomerLoanService {
         if (emi.getStatus() != EmiPayment.EmiStatus.PENDING) {
             throw new RuntimeException("EMI is not pending or already paid");
         }
-
 
         // mark paid
         emi.setStatus(EmiPayment.EmiStatus.PAID);
@@ -206,7 +198,10 @@ public class CustomerLoanService {
         EmiPayment saved = emiPaymentRepository.save(emi);
 
         // 🔔 send plain-text payment receipt (non-blocking try/catch)
-        try { mailService.sendEmiPaidText(saved); } catch (Exception ignore) {}
+        try {
+            mailService.sendEmiPaidText(saved);
+        } catch (Exception ignore) {
+        }
 
         // 🔒 If no more PENDING EMIs, close the loan
         Loan loan = saved.getLoan();
@@ -225,54 +220,9 @@ public class CustomerLoanService {
                         .setScale(2, RoundingMode.HALF_UP);
 
                 mailService.sendLoanClosedText(loan, totalRepayable);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
-
-        return saved;
-    }
-
-
-        // ownership
-        if (!emi.getLoan().getCustomer().getUserId().equals(customer.getUserId())) {
-            throw new RuntimeException("Unauthorized access to this EMI");
-        }
-        // status
-        if (emi.getStatus() != EmiPayment.EmiStatus.PENDING) {
-            throw new RuntimeException("EMI is not pending or already paid");
-        }
-
-
-        // mark paid
-        emi.setStatus(EmiPayment.EmiStatus.PAID);
-        emi.setPaymentDate(java.time.LocalDate.now());
-        emi.setTransactionRef(java.util.UUID.randomUUID().toString());
-
-        // save first
-        EmiPayment saved = emiPaymentRepository.save(emi);
-
-        // 🔔 send plain-text payment receipt (non-blocking try/catch)
-        try { mailService.sendEmiPaidText(saved); } catch (Exception ignore) {}
-
-        // 🔒 If no more PENDING EMIs, close the loan
-        Loan loan = saved.getLoan();
-        long pendingLeft = emiPaymentRepository.countByLoanAndStatus(loan, EmiPayment.EmiStatus.PENDING);
-        if (pendingLeft == 0) {
-            loan.setLoanStatus(LoanStatus.CLOSED);
-            loan.setClosedAt(LocalDateTime.now());
-            loanRepository.save(loan);
-
-            // compute totals for closure email: total repayable = sum of all EMIs
-            try {
-                List<EmiPayment> allEmis = emiPaymentRepository.findByLoanOrderByDueDateAsc(loan);
-                BigDecimal totalRepayable = allEmis.stream()
-                        .map(EmiPayment::getAmount)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .setScale(2, RoundingMode.HALF_UP);
-
-                mailService.sendLoanClosedText(loan, totalRepayable);
-            } catch (Exception ignore) {}
-        }
-
 
         return saved;
     }
