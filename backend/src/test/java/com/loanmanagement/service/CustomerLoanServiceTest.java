@@ -3,7 +3,6 @@ package com.loanmanagement.service;
 import com.loanmanagement.dto.LoanRequestDto;
 import com.loanmanagement.dto.LoanStatusHistoryDto;
 import com.loanmanagement.dto.LoanTypeActiveCountDto;
-import com.loanmanagement.dto.LoanWithEmiDto;
 import com.loanmanagement.model.*;
 import com.loanmanagement.model.Loan.LoanStatus;
 import com.loanmanagement.repository.*;
