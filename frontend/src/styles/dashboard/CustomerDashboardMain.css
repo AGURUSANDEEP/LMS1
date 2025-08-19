@@ -210,3 +210,88 @@
   font-size: 14px;
   color: #475569;
 }
+
+
+/* ========== RESPONSIVENESS ========== */
+
+/* For tablets (max 1024px) */
+@media (max-width: 1024px) {
+  .cdm-main-columns {
+    grid-template-columns: 1fr; /* Stack EMI section below applications */
+  }
+
+  .cdm-stat-box {
+    padding: 1rem;
+  }
+
+  .cdm-loan-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .cdm-loan-middle {
+    text-align: left;
+  }
+
+  .cdm-loan-right {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+/* For mobile screens (max 768px) */
+@media (max-width: 768px) {
+  .cdm-wrapper {
+    padding: 1rem;
+  }
+
+  .cdm-stats-row {
+    grid-template-columns: 1fr 1fr; /* 2 per row */
+  }
+
+  .cdm-loan-card {
+    padding: 0.8rem;
+  }
+
+  .cdm-loan-type {
+    font-size: 14px;
+  }
+
+  .cdm-loan-middle h3 {
+    font-size: 15px;
+  }
+
+  .cdm-loan-middle p {
+    font-size: 12px;
+  }
+
+  .cdm-loan-right button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
+/* For very small phones (max 480px) */
+@media (max-width: 480px) {
+  .cdm-stats-row {
+    grid-template-columns: 1fr; /* stack all stats */
+  }
+
+  .cdm-loan-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cdm-loan-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cdm-loan-right button {
+    width: 100%;
+    text-align: center;
+  }
+}
