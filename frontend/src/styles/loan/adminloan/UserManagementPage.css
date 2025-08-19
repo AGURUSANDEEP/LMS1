@@ -53,12 +53,11 @@
 }
 
 /* 🧾 Section Heading */
-/* 🧾 Section Heading */
 .user-management-section-header-wrapper {
   padding: 0.5rem 2rem;
   margin-top: 1rem;
   margin-bottom: 0.8rem;
-  position: relative;   /* ✅ stay in flow */
+  position: relative;
 }
 
 .user-management-section-heading {
@@ -71,42 +70,33 @@
 .user-management-count-label {
   color: #555;
   font-size: 0.95rem;
-  margin: 0;   /* ✅ prevents extra spacing */
+  margin: 0;
 }
 
-
 /* 📊 Table Container */
-/* 📊 Table Container (fixed for responsiveness) */
 .user-management-table-wrapper {
-  margin: 1rem;
+  margin: 0.7rem;
   padding: 0.5rem;
   background-color: #fff;
   border-radius: 20px;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
-  
-  /* ✅ Remove absolute positioning */
   position: relative;
   top: auto;
-
-  /* ✅ Allow vertical scrolling inside */
   max-height: 500px;
-  overflow-y: auto;   /* vertical scroll */
-  overflow-x: auto;   /* horizontal scroll (for small screens) */
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
-/* Inner scroll for big tables */
 .user-management-table-scroll {
   min-width: 1100px;
   overflow-x: auto;
 }
-
 
 /* 📄 Table Styling */
 .user-management-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-
 }
 
 .user-management-table thead {
@@ -186,7 +176,6 @@
   color: #2e7d32;
 }
 
-/* Role + Loan Count combo alignment */
 .user-role-loan-wrapper {
   display: flex;
   align-items: center;
@@ -249,7 +238,7 @@
   background-color: #495057;
 }
 
-/* 🟦 Modal Overlay for key + delete confirmation */
+/* 🟦 Modal Overlay */
 .user-modal-overlay {
   position: fixed;
   top: 0;
@@ -258,13 +247,12 @@
   z-index: 999;
   height: 100vh;
   background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(50px);       /* 🔹 Blur effect */
-  -webkit-backdrop-filter: blur(10px); /* 🔹 Safari support */
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 
 .user-modal-content {
   background-color: white;
@@ -276,48 +264,17 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.user-modal-overlay .user-modal-content h4 {
+.user-modal-content h4,
+.user-modal-content h3 {
   font-size: 1.2rem;
-  margin-bottom: 1.5rem;
   font-weight: 600;
-
+  color: #023861;
+  margin-bottom: 1.5rem;
 }
-
-.user-modal-overlay .user-modal-content h3 {
-  font-size: 1.2rem;
-  font-weight: 650;
-  color: #023861
-
-}
-
 
 .user-modal-content p {
-  margin-bottom: 1rem; /* spacing after subtitle text */
-  margin-top: 0.5rem; /* spacing after subtitle text */
+  margin: 0.5rem 0 1rem;
 }
-
-.user-modal-content input {
-  width: 100%;
-  max-width: 350px;  /* Matches width alignment with buttons */
-  display: block;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-  margin-left: 1rem;
-}
-
-/* 🔹 Focus effect for modal input */
-.user-modal-content input:focus {
-  outline: none;
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
-  background-color: #fff;
-}
-
-
-
 
 .user-modal-buttons {
   display: flex;
@@ -326,43 +283,8 @@
   margin-top: 1.5rem;
 }
 
-.user-cancel-btn {
-  flex: 1;
-  max-width: 120px;
-  text-align: center;
-  padding: 0.6rem 1.4rem;
-  font-weight: 600;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  background-color: #ccc;
-  color: #333;
-}
-
-.user-cancel-btn:hover {
-  background-color: #999;
-}
-
-/* 🟥 For delete confirmation */
-.user-confirm-delete-btn {
-  flex: 1;
-  max-width: 120px;
-  text-align: center;
-  padding: 0.6rem 1.4rem;
-  font-weight: 600;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  background-color: #d9534f;
-  color: white;
-}
-.user-confirm-delete-btn:hover {
-  background-color: #b52b27;
-}
-
-/* 🟦 For super key submit */
+.user-cancel-btn,
+.user-confirm-delete-btn,
 .user-confirm-key-btn {
   flex: 1;
   max-width: 120px;
@@ -373,41 +295,148 @@
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
+}
+
+.user-cancel-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.user-cancel-btn:hover {
+  background-color: #999;
+}
+
+.user-confirm-delete-btn {
+  background-color: #d9534f;
+  color: white;
+}
+
+.user-confirm-delete-btn:hover {
+  background-color: #b52b27;
+}
+
+.user-confirm-key-btn {
   background-color: #234b79;
   color: white;
 }
+
 .user-confirm-key-btn:hover {
   background-color: #0d5195;
 }
 
+/* 👁 Eye icon inside label */
+.user-password-label-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.user-password-label-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.user-password-eye {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+  color: #555;
+  font-size: 1.1rem;
+  z-index: 5;
+}
+
+
+/* ✅ Default for desktop — Always show filters */
+.user-management-filter-fixed {
+  display: block;
+  position: relative;
+  width: 100%;
+  z-index: 100;
+  padding: 1rem 2rem;
+  margin-bottom: -1rem;
+}
+
+/* ✅ Always enforce open on any screen size */
+.user-management-filter-fixed.open {
+  display: block !important;
+}
+
+/* 👇 Hide filter toggle on desktop */
+.user-toggle-filters-btn {
+  display: none;
+}
 
 
 
-/* 📱 Responsive adjustments for 900px and below */
+
+/* 📱 Mobile Layout */
 @media (max-width: 900px) {
-  .user-management-filter-card {
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    align-items: stretch;
+  .user-toggle-filters-btn {
+    display: block;
+    position: fixed;
+    top: 2rem;
+    right: 1rem;
+    z-index: 999;
+    background-color: #02467b;
+    color: white;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
   }
 
-  .user-management-filter-group {
-    width: 100%;
-    flex: none;
-  }
-
-  .user-management-filter-input {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
+  .user-toggle-filters-btn:hover {
+    background-color: #032f5c;
   }
 
   .user-management-filter-fixed {
-    padding: 1rem;
+    display: none !important;
+    position: absolute;
+    top: 6rem;
+    right: 1rem;
+    width: 90%;
+    max-width: 350px;
+    background-color: #dcdee0;
+    z-index: 200;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
 
-  .user-active-filter-tags {
-    margin-left: 0;
-    justify-content: flex-start;
+  .user-management-filter-fixed.open {
+    display: block !important;
+  }
+
+  .user-management-filter-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+}
+
+/* 📱 Modal responsiveness */
+@media (max-width: 770px) {
+  .user-modal-overlay {
+    left: 0;
+    width: 100%;
+    padding: 5rem;
+  }
+
+  .user-modal-content {
+    width: 100%;
+    max-width: none;
+    padding: 3rem;
+    margin: 0 auto;
+  }
+
+  .user-modal-content input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    margin: 0 auto;
   }
 }

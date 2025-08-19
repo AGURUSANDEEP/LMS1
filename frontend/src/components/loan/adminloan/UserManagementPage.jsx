@@ -1,5 +1,3 @@
-// src/components/loan/adminloan/UserManagementPage.jsx
-
 import { useCallback, useEffect, useState } from "react";
 import "../../../styles/loan/adminloan/UserManagementPage.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -16,18 +14,15 @@ const UserManagementPage = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
-
-  // ✅ Separate sort states
   const [sortLoanOption, setSortLoanOption] = useState("");
   const [sortDateOption, setSortDateOption] = useState("");
-
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deleteUserRole, setDeleteUserRole] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   const [authModalOpen, setAuthModalOpen] = useState(true);
   const [enteredKey, setEnteredKey] = useState("");
-  const [showKey, setShowKey] = useState(false); // for password toggle
+  const [showKey, setShowKey] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -50,11 +45,21 @@ const UserManagementPage = () => {
     setSortLoanOption("");
     setSortDateOption("");
   }, []);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 900) {
+        setShowFilters(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
 
   useEffect(() => {
     let updated = [...users];
-
-    // 🔍 Filtering
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       updated = updated.filter(
@@ -69,14 +74,12 @@ const UserManagementPage = () => {
       updated = updated.filter((user) => user.role === roleFilter);
     }
 
-    // 📊 Sorting by Loan Count
     if (sortLoanOption === "loanAsc") {
       updated.sort((a, b) => (a.activeLoanCount ?? 0) - (b.activeLoanCount ?? 0));
     } else if (sortLoanOption === "loanDesc") {
       updated.sort((a, b) => (b.activeLoanCount ?? 0) - (a.activeLoanCount ?? 0));
     }
 
-    // 📅 Sorting by Registration Date
     if (sortDateOption === "dateAsc") {
       updated.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     } else if (sortDateOption === "dateDesc") {
@@ -114,44 +117,32 @@ const UserManagementPage = () => {
 
   return (
     <div className="user-management-page-wrapper">
-      {/* 🔑 Secret Key Modal */}
+      {/* 🔑 Access Key Modal */}
       {authModalOpen && (
         <div className="user-modal-overlay">
           <div className="user-modal-content">
             <h3>User Management Access</h3>
             <p>Enter the secret access key to continue</p>
-            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <label className="user-password-label-wrapper">
               <input
                 type={showKey ? "text" : "password"}
                 value={enteredKey}
                 onChange={(e) => setEnteredKey(e.target.value)}
                 placeholder="Enter secret key..."
                 className="user-management-filter-input"
-                style={{ width: "100%", paddingRight: "2.5rem" }}
               />
               <span
+                className="user-password-eye"
                 onClick={() => setShowKey(!showKey)}
-                style={{
-                  position: "relative",
-                  right: "30px",
-                  cursor: "pointer",
-                  color: "#555"
-                }}
               >
                 {showKey ? <FaEyeSlash /> : <FaEye />}
               </span>
-            </div>
+            </label>
             <div className="user-modal-buttons">
-              <button
-                className="user-cancel-btn"
-                onClick={() => setEnteredKey("")}
-              >
+              <button className="user-cancel-btn" onClick={() => setEnteredKey("")}>
                 Clear
               </button>
-              <button
-                className="user-confirm-key-btn"
-                onClick={handleKeySubmit}
-              >
+              <button className="user-confirm-key-btn" onClick={handleKeySubmit}>
                 Submit
               </button>
             </div>
@@ -159,64 +150,80 @@ const UserManagementPage = () => {
         </div>
       )}
 
-      {/* Filters */}
-      <div className="user-management-filter-fixed open">
-        <div className="user-management-filter-card">
-          <div className="user-management-filter-group">
-            <label>Search Users</label>
-            <input
-              type="text"
-              placeholder="User ID, Username, or Email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="user-management-filter-input"
-              autoComplete="off"
-            />
-          </div>
-          <div className="user-management-filter-group">
-            <label>Role</label>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="user-management-filter-input"
-            >
-              {["All", "ADMIN", "CUSTOMER"].map((role) => (
-                <option key={role} value={role}>
-                  {role === "All"
-                    ? "All"
-                    : role.charAt(0) + role.slice(1).toLowerCase()}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="user-management-filter-group">
-            <label>Sort by Loan Count</label>
-            <select
-              value={sortLoanOption}
-              onChange={(e) => setSortLoanOption(e.target.value)}
-              className="user-management-filter-input"
-            >
-              <option value="">None</option>
-              <option value="loanAsc">Loan Count (ASC)</option>
-              <option value="loanDesc">Loan Count (DESC)</option>
-            </select>
-          </div>
-          <div className="user-management-filter-group">
-            <label>Sort by Registration Date</label>
-            <select
-              value={sortDateOption}
-              onChange={(e) => setSortDateOption(e.target.value)}
-              className="user-management-filter-input"
-            >
-              <option value="">None</option>
-              <option value="dateAsc">Registration Date (ASC)</option>
-              <option value="dateDesc">Registration Date (DESC)</option>
-            </select>
+      {/* 🔽 Toggle Filter Button */}
+      
+      {!authModalOpen && !showDeleteModal && (
+        <button
+          className="user-toggle-filters-btn"
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
+        </button>
+      )}
+
+      
+      
+
+      {/* 🧠 Filters Section (Responsive) */}
+      {!authModalOpen && !showDeleteModal && showFilters && (
+        <div className={`user-management-filter-fixed open`}>
+          <div className="user-management-filter-card">
+            <div className="user-management-filter-group">
+              <label>Search Users</label>
+              <input
+                type="text"
+                placeholder="User ID, Username, or Email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="user-management-filter-input"
+                autoComplete="off"
+              />
+            </div>
+            <div className="user-management-filter-group">
+              <label>Role</label>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="user-management-filter-input"
+              >
+                {["All", "ADMIN", "CUSTOMER"].map((role) => (
+                  <option key={role} value={role}>
+                    {role === "All"
+                      ? "All"
+                      : role.charAt(0) + role.slice(1).toLowerCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="user-management-filter-group">
+              <label>Sort by Loan Count</label>
+              <select
+                value={sortLoanOption}
+                onChange={(e) => setSortLoanOption(e.target.value)}
+                className="user-management-filter-input"
+              >
+                <option value="">None</option>
+                <option value="loanAsc">Loan Count (ASC)</option>
+                <option value="loanDesc">Loan Count (DESC)</option>
+              </select>
+            </div>
+            <div className="user-management-filter-group">
+              <label>Sort by Registration Date</label>
+              <select
+                value={sortDateOption}
+                onChange={(e) => setSortDateOption(e.target.value)}
+                className="user-management-filter-input"
+              >
+                <option value="">None</option>
+                <option value="dateAsc">Registration Date (ASC)</option>
+                <option value="dateDesc">Registration Date (DESC)</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Active Filters */}
+      {/* 🏷️ Filter Tags */}
       <div className="user-active-filter-tags">
         {searchTerm && (
           <span className="user-filter-badge">Search: "{searchTerm}"</span>
@@ -251,7 +258,7 @@ const UserManagementPage = () => {
         )}
       </div>
 
-      {/* Header */}
+      {/* 🧑‍💼 Table Header */}
       <div className="user-management-section-header-wrapper">
         <h3 className="user-management-section-heading">User Management</h3>
         <p className="user-management-count-label">
@@ -259,7 +266,7 @@ const UserManagementPage = () => {
         </p>
       </div>
 
-      {/* Table */}
+      {/* 📋 Table Section */}
       <div className="user-management-table-wrapper">
         <div className="user-management-table-scroll">
           <table className="user-management-table">
@@ -328,12 +335,9 @@ const UserManagementPage = () => {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* ❗ Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div
-          className="user-modal-overlay"
-          onClick={() => setShowDeleteModal(false)}
-        >
+        <div className="user-modal-overlay" onClick={() => setShowDeleteModal(false)}>
           <div
             className="user-modal-content"
             onClick={(e) => e.stopPropagation()}
@@ -346,10 +350,7 @@ const UserManagementPage = () => {
               &nbsp;?
             </h4>
             <div className="user-modal-buttons">
-              <button
-                className="user-cancel-btn"
-                onClick={() => setShowDeleteModal(false)}
-              >
+              <button className="user-cancel-btn" onClick={() => setShowDeleteModal(false)}>
                 Cancel
               </button>
               <button

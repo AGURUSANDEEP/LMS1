@@ -38,7 +38,9 @@ public class EmiGenerationService {
         int totalMonths = loan.getTenureYears() * 12;
         LocalDate firstDueDate = LocalDate.now().plusMonths(1);
 
-        BigDecimal remainingBalance = loan.getAmount(); // start from principal
+        BigDecimal totalRepayable = monthlyEmi.multiply(BigDecimal.valueOf(totalMonths), MC);
+        BigDecimal remainingBalance = totalRepayable; // ✅ Total repayable = principal + interest
+
 
         List<EmiPayment> emis = new ArrayList<>();
 

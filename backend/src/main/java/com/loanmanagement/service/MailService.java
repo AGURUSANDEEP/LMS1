@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.mail.internet.MimeMessage;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -122,13 +123,13 @@ public class MailService {
     }
 
     // ---------- PUBLIC: EMI receipt (HTML; printable) ----------
-    // ---------- PUBLIC: EMI receipt (HTML; printable) ----------
-public void sendEmiPaidText(EmiPayment emi) {
+    public void sendEmiPaidText(EmiPayment emi) {
     try {
         if (emi == null || emi.getLoan() == null || emi.getLoan().getCustomer() == null) {
             System.out.println("[MAIL] Skip EMI receipt: missing data");
             return;
         }
+
         Loan loan = emi.getLoan();
         User user = loan.getCustomer();
         String to = user.getEmail();
@@ -137,47 +138,44 @@ public void sendEmiPaidText(EmiPayment emi) {
             return;
         }
 
-        // Compute X/N and totals
         List<EmiPayment> all = emiPaymentRepository.findByLoanOrderByDueDateAsc(loan);
         int totalEmis = all.size();
         int index = -1;
         for (int i = 0; i < totalEmis; i++) {
-            if (all.get(i).getId().equals(emi.getId())) { index = i; break; }
+            if (all.get(i).getId().equals(emi.getId())) {
+                index = i;
+                break;
+            }
         }
         String emiNo = (index >= 0 ? (index + 1) : 1) + " / " + (totalEmis > 0 ? totalEmis : 1);
 
-        BigDecimal totalRepayable = all.stream()
-                .map(EmiPayment::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal principal   = loan.getAmount() != null ? loan.getAmount() : BigDecimal.ZERO;
+        BigDecimal monthlyEmi = emi.getAmount();
+        BigDecimal totalRepayable = monthlyEmi.multiply(BigDecimal.valueOf(totalEmis)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal principal = loan.getAmount() != null ? loan.getAmount() : BigDecimal.ZERO;
         BigDecimal interestAmt = totalRepayable.subtract(principal);
 
-        String subject   = "EMI Payment Receipt — Loan #" + loan.getId();
+        String subject = "EMI Payment Receipt — Loan #" + loan.getId();
         String receiptNo = "RCPT-" + String.format("%06d", emi.getId() == null ? 0 : emi.getId());
-        String tx        = (emi.getTransactionRef() == null || emi.getTransactionRef().isBlank()) ? "—" : esc(emi.getTransactionRef());
-        String paidOn    = emi.getPaymentDate() != null ? D_ONLY.format(emi.getPaymentDate()) : "—";
-        String dueOn     = emi.getDueDate() != null ? D_ONLY.format(emi.getDueDate()) : "—";
-        String remBal    = emi.getRemainingBalance() != null ? inr(emi.getRemainingBalance()) : "—";
-        String borrower  = (user.getName() != null && !user.getName().trim().isEmpty()) ? esc(user.getName()) : "Customer";
-        String rateStr   = loan.getAppliedInterestRate() == null ? "—" : String.format("%.2f%%", loan.getAppliedInterestRate());
-        String loanName  = (loan.getLoanType() != null && loan.getLoanType().getName() != null)
+        String tx = (emi.getTransactionRef() == null || emi.getTransactionRef().isBlank()) ? "—" : esc(emi.getTransactionRef());
+        String paidOn = emi.getPaymentDate() != null ? D_ONLY.format(emi.getPaymentDate()) : "—";
+        String dueOn = emi.getDueDate() != null ? D_ONLY.format(emi.getDueDate()) : "—";
+        String remBal = emi.getRemainingBalance() != null ? inr(emi.getRemainingBalance()) : "—";
+        String borrower = (user.getName() != null && !user.getName().trim().isEmpty()) ? esc(user.getName()) : "Customer";
+        String rateStr = loan.getAppliedInterestRate() == null ? "—" : String.format("%.2f%%", loan.getAppliedInterestRate());
+        String loanName = (loan.getLoanType() != null && loan.getLoanType().getName() != null)
                 ? esc(loan.getLoanType().getName()) : "—";
 
-        // Header (left: receipt no, right: status)
+        // HTML layout
         StringBuilder head = new StringBuilder();
-        head.append("<div class=\"hdr\" ")
-            .append("style=\"display:flex;justify-content:space-between;align-items:center;gap:24px;padding:6px 0 12px;\">")
+        head.append("<div class=\"hdr\" style=\"display:flex;justify-content:space-between;align-items:center;gap:24px;padding:6px 0 12px;\">")
             .append("<div class=\"small\" style=\"letter-spacing:.2px;\">")
               .append("Receipt No. <b>").append(esc(receiptNo)).append("</b>")
             .append("</div>")
             .append("<div class=\"small\" style=\"text-align:right;\">")
-              .append("<span class=\"pill\" ")
-              .append("style=\"background:#E8FFF0;color:#065F46;border-color:#D1FAE5;font-weight:700;")
-              .append("margin-left:8px;padding:6px 12px;\">PAID</span>")
+              .append("<span class=\"pill\" style=\"background:#E8FFF0;color:#065F46;border-color:#D1FAE5;font-weight:700;margin-left:8px;padding:6px 12px;\">PAID</span>")
             .append("</div>")
           .append("</div>");
 
-        // Body table (now includes Loan Name)
         StringBuilder body = new StringBuilder();
         body.append(head)
             .append("<p>Dear ").append(borrower).append(",</p>")
@@ -185,7 +183,7 @@ public void sendEmiPaidText(EmiPayment emi) {
             .append("<table>")
               .append("<tr><th>Transaction Ref ID</th><td>").append(tx).append("</td></tr>")
               .append("<tr><th>Loan ID</th><td>LN").append(String.format("%05d", loan.getId())).append("</td></tr>")
-              .append("<tr><th>Loan Name</th><td>").append(loanName).append("</td></tr>")   // ⬅️ added
+              .append("<tr><th>Loan Name</th><td>").append(loanName).append("</td></tr>")
               .append("<tr><th>EMI No.</th><td>").append(esc(emiNo)).append("</td></tr>")
               .append("<tr><th>EMI Amount</th><td>").append(inr(emi.getAmount())).append("</td></tr>")
               .append("<tr><th>Paid On</th><td>").append(esc(paidOn)).append("</td></tr>")
@@ -204,6 +202,7 @@ public void sendEmiPaidText(EmiPayment emi) {
         String html = shell("EMI Payment Receipt", body.toString());
         sendHtml(to, subject, html);
         System.out.println("[MAIL] EMI receipt (HTML) sent to " + to);
+
     } catch (Exception e) {
         System.out.println("[MAIL] EMI receipt FAILED: " + e.getMessage());
         e.printStackTrace();
@@ -212,9 +211,6 @@ public void sendEmiPaidText(EmiPayment emi) {
 
 
 
-
-    // ---------- PUBLIC: Loan closed (NOC-style) HTML; already good/printable ----------
-    // ---------- PUBLIC: Loan closed (NOC-style) HTML; styled same as receipt ----------
 // ---------- PUBLIC: Loan closed (NOC-style) HTML; styled same as receipt ----------
 public void sendLoanClosedText(Loan loan, BigDecimal totalRepayableIgnored) {
     try {
