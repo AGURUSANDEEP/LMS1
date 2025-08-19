@@ -331,7 +331,7 @@
 }
 
 /* Responsive: show list as overlay on small screens */
-@media (max-width: 900px) {
+@media (max-width: 1090px) {
   .adminchat-box {
     grid-template-columns: 1fr;
     min-height: 80vh;
@@ -344,15 +344,16 @@
   .adminchat-people {
     position: absolute;
     inset: 0;
-    width: 86%;
-    max-width: 360px;
+    top: 6rem;
+    width: 80%;
+    max-width: 320px;
     z-index: 30;
     transform: translateX(-105%);
     transition: transform .25s ease;
     border-right: none;
     border-radius: 0 18px 18px 0;
     box-shadow: var(--shadow);
-    height: 100%;
+    height: 80%;
     min-height: 0;
   }
   .adminchat-people.open {
