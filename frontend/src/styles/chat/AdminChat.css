@@ -330,39 +330,60 @@
   display: inline-block;
 }
 
+
 /* Responsive: show list as overlay on small screens */
 @media (max-width: 1090px) {
-  .adminchat-box {
-    grid-template-columns: 1fr;
-    min-height: 80vh;
-    height: 90vh;
-    max-height: 98vh;
+  
+  
+  .adminchat-wrap {
+
+
+    min-height: 90vh;
+
   }
+  
+  .adminchat-box {
+    position: relative; /* ✅ Needed to wrap .adminchat-people inside */
+    grid-template-columns: 1fr;
+    min-height: 60vh;
+    height: 70vh; /* ✅ Reduced height */
+    max-height: 70vh; /* ✅ Reduced max-height */
+  }
+  
+
   .adminchat-toggle-list {
     display: inline-flex;
   }
+
   .adminchat-people {
-    position: absolute;
+    position: absolute; /* ✅ Now relative to .adminchat-box */
     inset: 0;
-    top: 6rem;
+    top: 0rem;
+    left: 0;
     width: 80%;
     max-width: 320px;
     z-index: 30;
     transform: translateX(-105%);
-    transition: transform .25s ease;
+    transition: transform 0.25s ease;
     border-right: none;
     border-radius: 0 18px 18px 0;
     box-shadow: var(--shadow);
-    height: 80%;
+    height: calc(100% - 6rem); /* ✅ Prevent overflow */
     min-height: 0;
+
+    background-color: white; /* Optional: ensure it's visible */
   }
+
   .adminchat-people.open {
     transform: translateX(0);
-  }
-  .adminchat-close-list {
-    display: inline
-  }
-  .adminchat-panel {
     height: 100%;
+  }
+
+  .adminchat-close-list {
+    display: inline;
+  }
+
+  .adminchat-panel {
+    height: 100%; /* ✅ Matches container */
   }
 }

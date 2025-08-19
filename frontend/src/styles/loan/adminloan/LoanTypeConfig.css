@@ -2,7 +2,7 @@
   padding: 1.5rem 2rem;
   font-family: 'Segoe UI', sans-serif;
   background-color: #f3f9ff;
-  min-height: 100vh;
+  min-height: 70vh;
 }
 
 .loan-type-header {
@@ -312,11 +312,37 @@
 
 
 /* 🟰 Equal width for all 5 table columns */
-.loan-type-table th,
-.loan-type-table td {
-  width: 20%;
+/* Custom widths for each column */
+.loan-type-table th:nth-child(1),
+.loan-type-table td:nth-child(1) {
+  width: 22%; /* Name */
+  text-align: left;
+}
+
+.loan-type-table th:nth-child(2),
+.loan-type-table td:nth-child(2) {
+  width: 14%; /* Max Tenure */
   text-align: center;
 }
+
+.loan-type-table th:nth-child(3),
+.loan-type-table td:nth-child(3) {
+  width: 20%; /* Max Amount */
+  text-align: center;
+}
+
+.loan-type-table th:nth-child(4),
+.loan-type-table td:nth-child(4) {
+  width: 18%; /* Max Loans */
+  text-align: center;
+}
+
+.loan-type-table th:nth-child(5),
+.loan-type-table td:nth-child(5) {
+  width: 26%; /* Actions */
+  text-align: center;
+}
+
 
 .loan-type-modal-overlay {
   position: fixed;
@@ -343,9 +369,45 @@
 }
 
 
-@media (max-width: 768px) {
+
+@media (max-width: 1111px) {
+  .loan-type-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .loan-type-table {
+    width: 720px; /* Force table to scroll horizontally */
+    min-width: 700px;
+  }
+
+  .loan-type-table td,
+  .loan-type-table th {
+    white-space: nowrap; /* Prevent wrapping */
+  }
+}
+
+
+
+@media (max-width: 770px) {
+  
+
+  
   .loan-type-modal-overlay {
     left: 0;
     width: 100%;
   }
+  
+  
+  
+  .loan-type-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .loan-type-table {
+    width: 780px; /* Forces horizontal scroll */
+  }
 }
+
+

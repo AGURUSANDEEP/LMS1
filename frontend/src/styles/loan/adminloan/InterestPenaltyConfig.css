@@ -297,3 +297,11 @@
     width: 90px;
   }
 }
+
+/* 🔧 Adjust modal overlay for screen width ≤770px */
+@media (max-width: 770px) {
+ .interest-modal-overlay {
+    left: 0; /* ✅ Shift modal left */
+    width: 100%; /* ✅ Expand width to compensate */
+  }
+}

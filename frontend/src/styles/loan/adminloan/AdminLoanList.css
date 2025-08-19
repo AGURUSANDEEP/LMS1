@@ -136,7 +136,9 @@
   vertical-align: middle;
   padding: 1rem;
   border-bottom: 1px solid #e0e0e0;
+  line-height: 1.4;
 }
+
 
 .admin-loan-table td {
   background-color: #fff;
@@ -216,7 +218,11 @@
 .admin-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;   /* ✅ Ensure vertical centering */
   gap: 0.4rem;
+}
+.admin-loan-table tbody tr {
+  min-height: 60px;
 }
 
 .admin-actions button {
@@ -479,27 +485,27 @@
 }
 
 
+
+
 /* 📱 Show button and panel only on ≤900px */
 @media (max-width: 900px) {
-  
   .admin-toggle-filters-btn {
-  display: block;
-  position: fixed;        /* 🧷 Change from sticky to fixed */
-  top: 2rem;           /* consistent vertical spacing */
-  right: 1rem;            /* stick to the right corner */
-  margin: 0;              /* remove shifting margin */
-  z-index: 999;
-  background-color: #02467b;
-  color: white;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
+    display: block;
+    position: fixed;
+    top: 2rem;
+    right: 1rem;
+    margin: 0;
+    z-index: 999;
+    background-color: #02467b;
+    color: white;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
 
   .admin-toggle-filters-btn:hover {
     background-color: #032f5c;
@@ -528,32 +534,19 @@
     align-items: stretch;
     gap: 0.8rem;
   }
-  
+
   .admin-loan-table-scroll {
-    height: 480px; /* 🔺 Increase as needed */
+    height: 480px;
     overflow-y: auto;
     margin-top: 1rem;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    
   }
 
-  .admin-loan-table {
-    font-size: 0.85rem;
-    height: 80vh;
-  }
-
-  .admin-loan-table thead th,
-  .admin-loan-table tbody td {
-    padding: 0.75rem;
-  }
-
-  .admin-loan-table tbody tr {
-    height: 60px; /* taller rows for mobile */
-  }
 }
 
-/* Ensure desktop doesn’t show filter button or overlay */
+
+/* 🖥️ Ensure desktop doesn’t show filter button or overlay */
 @media (min-width: 901px) {
   .admin-loan-filter-fixed {
     display: block;
@@ -579,6 +572,30 @@
     align-items: flex-end;
     justify-content: space-between;
   }
-  
+
+  .admin-loan-table thead th,
+  .admin-loan-table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+
+  .admin-loan-table tbody tr {
+    min-height: 60px;
+  }
+
+  .admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+  }
 }
 
+/* 🔧 Adjust modal overlay for screen width ≤770px */
+@media (max-width: 770px) {
+  .modal-overlay {
+    left: 0; /* ✅ Shift modal left */
+    width: 100%; /* ✅ Expand width to compensate */
+  }
+}
