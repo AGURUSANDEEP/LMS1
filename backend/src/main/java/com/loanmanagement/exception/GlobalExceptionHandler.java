@@ -4,31 +4,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles validation errors from @Valid annotated DTOs
+    // ✅ Handle validation errors (from @Valid DTOs)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+        // Extract first validation error message
+        String firstErrorMessage = ex.getBindingResult()
+                                     .getFieldErrors()
+                                     .stream()
+                                     .map(FieldError::getDefaultMessage)
+                                     .findFirst()
+                                     .orElse("Validation failed");
 
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        // Return { "message": "<error message>" }
+        return new ResponseEntity<>(Map.of("message", firstErrorMessage), HttpStatus.BAD_REQUEST);
     }
 
-    // Optional: Handle unexpected runtime exceptions
+    // ✅ Handle general runtime exceptions consistently
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+
 }

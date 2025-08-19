@@ -16,7 +16,6 @@ import com.loanmanagement.repository.LoanRepository;
 import com.loanmanagement.repository.LoanTypeRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,18 +28,10 @@ import java.util.*;
 @Service
 public class CustomerLoanService {
 
-    @Autowired
-    private LoanRepository loanRepository;
-
-    @Autowired
-    private LoanTypeRepository loanTypeRepository;
-
-    @Autowired
-    private ApplicationStatusHistoryRepository statusHistoryRepository;
-
-    @Autowired
-    private EmiPaymentRepository emiPaymentRepository;
-
+    private final LoanRepository loanRepository;
+    private final LoanTypeRepository loanTypeRepository;
+    private final ApplicationStatusHistoryRepository statusHistoryRepository;
+    private final EmiPaymentRepository emiPaymentRepository;
     private final MailService mailService;
 
     public Loan applyLoan(LoanRequestDto dto, User customer) {

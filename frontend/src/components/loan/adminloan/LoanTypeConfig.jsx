@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import "../../../styles/loan/adminloan/LoanTypeConfig.css";
+import { useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../../../styles/loan/adminloan/LoanTypeConfig.css";
 
 function LoanTypeConfig() {
   const [loanTypes, setLoanTypes] = useState([]);
@@ -128,10 +128,13 @@ function LoanTypeConfig() {
 
 
   const openEditModal = (loan) => {
-    const formattedAmount = new Intl.NumberFormat("en-IN").format(loan.maxLoanAmount);
-    setEditingLoan({ ...loan, maxLoanAmount: formattedAmount });
+    setEditingLoan({
+      ...loan,
+      maxLoanAmount: loan.maxLoanAmount?.toString() || ""
+    });
     setEditModalOpen(true);
   };
+
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -169,20 +172,21 @@ function LoanTypeConfig() {
   };
 
   const handleSaveEdit = async () => {
-    let { name, maxTenureYears, maxLoanAmount, maxLoansPerCustomerPerLoanType } = editingLoan;
-    if (!name || !maxTenureYears || !maxLoanAmount || !maxLoansPerCustomerPerLoanType) {
-      toast.error("All fields are required");
-      return;
-    }
+  let { name, maxTenureYears, maxLoanAmount, maxLoansPerCustomerPerLoanType } = editingLoan;
 
-    maxLoanAmount = maxLoanAmount.replace(/,/g, "");
+  if (!name || !maxTenureYears || !maxLoanAmount || !maxLoansPerCustomerPerLoanType) {
+    toast.error("All fields are required");
+    return;
+  }
 
-
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
       await axios.put(
         `http://localhost:8081/api/admin/loan-types/${editingLoan.loanTypeId}`,
-        { ...editingLoan, maxLoanAmount },
+        {
+          ...editingLoan,
+          maxLoanAmount: maxLoanAmount.toString()   // always raw numeric string
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -194,6 +198,7 @@ function LoanTypeConfig() {
       toast.error("Failed to update");
     }
   };
+
 
   return (
     <div className="loan-type-config-wrapper">
@@ -332,14 +337,24 @@ function LoanTypeConfig() {
             <input
               name="maxLoanAmount"
               value={
-                newLoan.maxLoanAmount
-                  ? new Intl.NumberFormat("en-IN").format(newLoan.maxLoanAmount)
+                editingLoan.maxLoanAmount
+                  ? new Intl.NumberFormat("en-IN").format(editingLoan.maxLoanAmount)
                   : ""
               }
-              onChange={handleChange}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                if (raw.length > 10 || Number(raw) > 1000000000) return;
+
+                setEditingLoan((prev) => ({
+                  ...prev,
+                  maxLoanAmount: raw,   // ✅ always store raw numeric
+                }));
+              }}
               placeholder="Max Amount (₹)"
               className="loan-type-input"
             />
+
+
 
             <label>Max Loans/Customer</label>
             <input

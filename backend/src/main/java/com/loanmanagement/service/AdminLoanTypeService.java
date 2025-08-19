@@ -41,8 +41,8 @@ public class AdminLoanTypeService {
                 .build();
 
         loanTypeRepository.save(type);
-        dto.setLoanTypeId(type.getLoanTypeId());
-        return dto;
+        return convertToDto(type);
+        
     }
 
     public LoanTypeDto updateLoanType(Long id, LoanTypeDto dto) {

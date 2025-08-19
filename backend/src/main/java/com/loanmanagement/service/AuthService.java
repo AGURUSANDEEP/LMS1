@@ -21,7 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.admin.secret}")
-    private String adminSecret;
+    protected String adminSecret;
 
     // ✅ NEW - Update password logic (for forgot password)
     public void updatePassword(String username, String newPassword, String confirmPassword) {
@@ -99,5 +99,11 @@ public class AuthService {
     public User getUserByUsername(String username) {
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    
+    
+    // ⚠️ Setter added only for unit testing the admin key logic
+    public void setAdminSecret(String adminSecret) {
+        this.adminSecret = adminSecret;
     }
 }
