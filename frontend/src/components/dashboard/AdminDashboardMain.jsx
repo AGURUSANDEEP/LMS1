@@ -90,12 +90,13 @@ function AdminDashboardMain() {
         </div>
         <div className="adm-stat-box">
           <FaCheckCircle />
-          <p>Loan Amount Approved</p>
+          <p>Total Loan Sanctioned</p>
           <h3>₹{(summary.totalApprovedLoanAmount || 0).toLocaleString("en-IN")}</h3>
         </div>
         <div className="adm-stat-box">
           <FaRupeeSign />
-          <p>Total Amount Repaid</p>
+          <p>Total Amount Received</p>
+
           <h3>₹{(summary.totalRepaidAmount || 0).toLocaleString("en-IN")}</h3>
         </div>
       </div>

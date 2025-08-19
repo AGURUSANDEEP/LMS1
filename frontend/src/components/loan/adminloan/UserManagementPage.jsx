@@ -22,7 +22,7 @@ const UserManagementPage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(true);
   const [enteredKey, setEnteredKey] = useState("");
   const [showKey, setShowKey] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const fetchUsers = useCallback(async () => {
     try {

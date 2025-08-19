@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +29,11 @@ public class AdminDashboardService {
         long totalLoanApplications = loanRepository.count();
 
         BigDecimal totalApprovedLoanAmount = loanRepository
-                .findAllByLoanStatus(Loan.LoanStatus.APPROVED)
-                .stream()
-                .map(Loan::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        .findAllByLoanStatusIn(List.of(Loan.LoanStatus.APPROVED, Loan.LoanStatus.CLOSED))
+        .stream()
+        .map(Loan::getAmount)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
 
         BigDecimal totalRepaidAmount = emiPaymentRepository
                 .findByStatus(EmiPayment.EmiStatus.PAID)
