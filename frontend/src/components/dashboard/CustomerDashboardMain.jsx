@@ -1,11 +1,11 @@
 // src/components/dashboard/CustomerDashboardMain.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  FaFileAlt,
-  FaCheckCircle,
   FaBuilding,
-  FaHourglassHalf,
+  FaCheckCircle,
   FaCreditCard,
+  FaFileAlt,
+  FaHourglassHalf,
 } from "react-icons/fa";
 
 import {
@@ -16,12 +16,12 @@ import {
 import "../../styles/dashboard/CustomerDashboardMain.css";
 
 // Loan Icons
-import HomeLoan from "../../assets/Home_Loan.png";
-import VehicleLoan from "../../assets/Vehicle_Loan.png";
-import PersonalLoan from "../../assets/Personal_Loan.png";
-import EducationalLoan from "../../assets/Educational_Loan.png";
-import BusinessLoan from "../../assets/Business_Loan.png";
 import AgriculturalLoan from "../../assets/Agricultural_Loan.png";
+import BusinessLoan from "../../assets/Business_Loan.png";
+import EducationalLoan from "../../assets/Educational_Loan.png";
+import HomeLoan from "../../assets/Home_Loan.png";
+import PersonalLoan from "../../assets/Personal_Loan.png";
+import VehicleLoan from "../../assets/Vehicle_Loan.png";
 
 function CustomerDashboardMain({ activeSection, setActiveSection }) {
   const [loans, setLoans] = useState([]);
@@ -66,7 +66,7 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
 
   const totalApplications = loans.length;
   const approvedAmount = loans
-    .filter((l) => l.loanStatus === "APPROVED")
+    .filter((l) => (l.loanStatus === "APPROVED" || l.loanStatus === "CLOSED"))
     .reduce((sum, l) => sum + (l.amount || 0), 0);
   const activeLoans = loans.filter((l) => l.loanStatus === "APPROVED").length;
   const pendingLoans = loans.filter(
@@ -78,11 +78,19 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
     .slice(0, 5)
     .map((loan) => {
       const pack = loanDetails[loan.id];
+
       const totalPaid =
-        pack?.emis?.filter((e) => e.status === "PAID").reduce((sum, e) => sum + e.amount, 0) || 0;
-      const totalDue = (loan.amount || 0) - totalPaid;
+        pack?.emis?.filter((e) => e.status === "PAID")
+          .reduce((sum, e) => sum + e.amount, 0) || 0;
+
+      const totalLiability =
+        pack?.emis?.reduce((sum, e) => sum + e.amount, 0) || 0; // principal + interest
+
+      const totalDue = totalLiability - totalPaid;
+
       return { ...loan, paid: totalPaid, remaining: totalDue };
     });
+
 
   const today = new Date();
   const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -107,7 +115,7 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
         </div>
         <div className="cdm-stat-box">
           <FaCheckCircle />
-          <p>Total Approved Amount</p>
+          <p>Total Loan Taken</p>
           <h3>₹{approvedAmount.toLocaleString("en-IN")}</h3>
         </div>
         <div className="cdm-stat-box">
