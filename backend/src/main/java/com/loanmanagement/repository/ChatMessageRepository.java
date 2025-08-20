@@ -12,4 +12,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findAllByOrderByCustomer_UserIdAscSentAtAsc();
 
     List<ChatMessage> findByCustomer_UserIdOrderBySentAtAsc(Long customerId);
+    
+    void deleteAllByCustomer(User customer);
 }

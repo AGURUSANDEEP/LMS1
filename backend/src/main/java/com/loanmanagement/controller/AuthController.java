@@ -1,5 +1,17 @@
 package com.loanmanagement.controller;
 
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.loanmanagement.config.JwtUtil;
 import com.loanmanagement.dto.AuthResponse;
 import com.loanmanagement.dto.LoginRequest;
@@ -8,12 +20,8 @@ import com.loanmanagement.dto.UpdatePasswordRequest;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.AuthService;
 
-import jakarta.validation.Valid; // ✅ Required for @Valid
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -37,7 +45,7 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
-    // ✅ POST /api/auth/register
+    // POST /api/auth/register
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
@@ -48,7 +56,7 @@ public class AuthController {
         }
     }
 
-    // ✅ POST /api/auth/login
+    // POST /api/auth/login
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
@@ -61,7 +69,7 @@ public class AuthController {
         }
     }
 
-    // ✅ POST /api/auth/update-password
+    // POST /api/auth/update-password
     @PostMapping("/update-password")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequest request) {
         try {

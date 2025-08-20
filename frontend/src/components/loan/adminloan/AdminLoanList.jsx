@@ -7,6 +7,7 @@ import {
   FaTimes,
   FaTrash,
 } from "react-icons/fa";
+
 import "../../../styles/loan/adminloan/AdminLoanList.css";
 
 
@@ -131,12 +132,24 @@ const AdminLoanList = () => {
       await axios.delete(`http://localhost:8081/api/admin/loans/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success("Loan deleted");
+
+      toast.error(
+        `Loan LN00${id} deleted`,
+        {
+          icon: <FaTrash style={{ color: "#d9534f" }} />,
+          autoClose: 2000,
+          hideProgressBar: false, // show progress bar
+        }
+      );
+
+
+
       fetchLoans();
     } catch (err) {
       toast.error("Failed to delete loan");
     }
   };
+
 
   return (
     <div className="admin-loan-page-wrapper">
@@ -413,7 +426,16 @@ const AdminLoanList = () => {
       <ToastContainer
         position="top-center"
         autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light" // important to allow custom progressStyle
       />
+
 
       
       {showDeleteModal && (

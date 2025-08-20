@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../../styles/loan/adminloan/LoanTypeConfig.css";
+import { FaTrash } from "react-icons/fa";
+
 
 function LoanTypeConfig() {
   const [loanTypes, setLoanTypes] = useState([]);
@@ -107,7 +109,17 @@ function LoanTypeConfig() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      toast.success("Loan type deleted successfully");
+
+      
+      toast.error(
+              `Loan type deleted successfully`,
+              {
+                icon: <FaTrash style={{ color: "#d9534f" }} />,
+                autoClose: 2000,
+                hideProgressBar: false, // show progress bar
+              }
+            );
+      
       fetchLoanTypes();
 
     } catch (error) {

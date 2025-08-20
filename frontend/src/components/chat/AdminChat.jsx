@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import EmojiPicker from "emoji-picker-react";
+
 import "../../styles/chat/AdminChat.css";
 
 export default function AdminChat({ adminId }) {
@@ -7,7 +7,7 @@ export default function AdminChat({ adminId }) {
   const [customerNames, setCustomerNames] = useState({});
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [input, setInput] = useState("");
-  const [showEmoji, setShowEmoji] = useState(false);
+
   const [listOpen, setListOpen] = useState(false);
   // const [adminDisplayName, setAdminDisplayName] = useState(
   //   localStorage.getItem("adminName") || ""
@@ -132,10 +132,6 @@ export default function AdminChat({ adminId }) {
     }
   };
 
-  const onEmojiClick = (emojiData) => {
-    setInput((prev) => prev + emojiData.emoji);
-    setShowEmoji(false);
-  };
 
   const renderPeople = () => (
     <div className={`adminchat-people ${listOpen ? "open" : ""}`}>
@@ -268,8 +264,9 @@ export default function AdminChat({ adminId }) {
                           <div className="adminchat-bubble-head">
                             <span className="adminchat-sender">{senderLabel}</span>
                             <span className="adminchat-time">
-                              {msgDate.toLocaleTimeString()}
+                              {msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
+
                           </div>
                           <div className="adminchat-text">{msg.message}</div>
                         </div>
@@ -290,24 +287,9 @@ export default function AdminChat({ adminId }) {
                 spellCheck={false}
               />
 
-              <button
-                type="button"
-                className="adminchat-emoji"
-                onClick={() => setShowEmoji((v) => !v)}
-                title="Add emoji"
-              >
-                😊
-              </button>
+              
 
-              {showEmoji && (
-                <div className="adminchat-emoji-pop">
-                  <EmojiPicker
-                    onEmojiClick={onEmojiClick}
-                    height={340}
-                    width={320}
-                  />
-                </div>
-              )}
+              
 
               <button className="adminchat-send" onClick={sendReply}>
                 Send

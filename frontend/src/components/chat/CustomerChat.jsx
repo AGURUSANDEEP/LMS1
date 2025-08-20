@@ -1,13 +1,13 @@
 // src/components/chat/CustomerChat.jsx
 import React, { useEffect, useRef, useState } from "react";
-import EmojiPicker from "emoji-picker-react";
+
 import "../../styles/chat/CustomerChat.css";
 
 export default function CustomerChat({ customerId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showEmoji, setShowEmoji] = useState(false);
+
   const [autoScroll, setAutoScroll] = useState(true);
   const [myName, setMyName] = useState(localStorage.getItem("customerName") || "");
 
@@ -98,10 +98,6 @@ export default function CustomerChat({ customerId }) {
     }
   };
 
-  const onEmojiClick = (emojiData) => {
-    setInput((p) => p + emojiData.emoji);
-    setShowEmoji(false);
-  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -165,7 +161,7 @@ export default function CustomerChat({ customerId }) {
                           {mine ? "You" : adminLabel}
                         </span>
                         <span className="customerchat-time">
-                          {msgDate.toLocaleTimeString()}
+                          {msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       <div className="customerchat-text">{msg.message}</div>
@@ -187,20 +183,9 @@ export default function CustomerChat({ customerId }) {
             placeholder="Type your message…"
             rows={1}
           />
-          <button
-            type="button"
-            className="customerchat-emoji"
-            onClick={() => setShowEmoji((v) => !v)}
-            title="Add emoji"
-          >
-            😊
-          </button>
+          
 
-          {showEmoji && (
-            <div className="customerchat-emoji-pop">
-              <EmojiPicker onEmojiClick={onEmojiClick} height={340} width={320} />
-            </div>
-          )}
+          
 
           <button className="customerchat-send" onClick={sendMessage}>
             Send

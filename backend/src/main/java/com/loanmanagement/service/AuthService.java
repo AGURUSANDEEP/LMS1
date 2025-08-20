@@ -1,16 +1,19 @@
 package com.loanmanagement.service;
 
-import com.loanmanagement.dto.*;
-import com.loanmanagement.model.User;
-import com.loanmanagement.repository.UserRepository;
-import com.loanmanagement.config.JwtUtil;
+import java.time.LocalDateTime;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import com.loanmanagement.config.JwtUtil;
+import com.loanmanagement.dto.AuthResponse;
+import com.loanmanagement.dto.LoginRequest;
+import com.loanmanagement.dto.RegisterRequest;
+import com.loanmanagement.model.User;
+import com.loanmanagement.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +26,7 @@ public class AuthService {
     @Value("${app.admin.secret}")
     protected String adminSecret;
 
-    // ✅ NEW - Update password logic (for forgot password)
+    // NEW - Update password logic (for forgot password)
     public void updatePassword(String username, String newPassword, String confirmPassword) {
         if (username == null || username.trim().isEmpty())
             throw new RuntimeException("Username is required");
@@ -102,7 +105,7 @@ public class AuthService {
     }
     
     
-    // ⚠️ Setter added only for unit testing the admin key logic
+    // Setter added only for unit testing the admin key logic
     public void setAdminSecret(String adminSecret) {
         this.adminSecret = adminSecret;
     }

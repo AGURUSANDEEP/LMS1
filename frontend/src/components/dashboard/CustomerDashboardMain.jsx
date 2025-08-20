@@ -1,5 +1,8 @@
 // src/components/dashboard/CustomerDashboardMain.jsx
 import { useEffect, useState } from "react";
+import {  useRef } from "react";
+import { FaCalendarAlt } from "react-icons/fa";
+import EmiCalendar from "../emi/EmiCalender";
 import {
   FaBuilding,
   FaCheckCircle,
@@ -26,6 +29,18 @@ import VehicleLoan from "../../assets/Vehicle_Loan.png";
 function CustomerDashboardMain({ activeSection, setActiveSection }) {
   const [loans, setLoans] = useState([]);
   const [loanDetails, setLoanDetails] = useState({});
+  const [showCalendar, setShowCalendar] = useState(false);
+  const calendarModalRef = useRef();
+  
+  // Use loanDetails instead of loans
+  const allEmis = Object.entries(loanDetails).flatMap(([loanId, d]) =>
+    (d?.emis || []).map(emi => ({
+      ...emi,
+      loanId: Number(loanId),
+      loanType: d?.loanType || undefined,
+    }))
+  );
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +81,7 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
 
   const totalApplications = loans.length;
   const approvedAmount = loans
-    .filter((l) => (l.loanStatus === "APPROVED" || l.loanStatus === "CLOSED"))
+    .filter((l) => l.loanStatus === "APPROVED" || l.loanStatus === "CLOSED")
     .reduce((sum, l) => sum + (l.amount || 0), 0);
   const activeLoans = loans.filter((l) => l.loanStatus === "APPROVED").length;
   const pendingLoans = loans.filter(
@@ -91,11 +106,15 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
       return { ...loan, paid: totalPaid, remaining: totalDue };
     });
 
-
   const today = new Date();
   const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const upcomingEMIs = Object.values(loanDetails)
-    .flatMap((d) => d?.emis || [])
+  const upcomingEMIs = Object.entries(loanDetails)
+    .flatMap(([loanId, d]) =>
+      (d?.emis || []).map((emi) => ({
+        ...emi,
+        loanId, // attach parent loanId
+      }))
+    )
     .filter(
       (emi) =>
         emi.status === "PENDING" &&
@@ -128,7 +147,42 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
           <p>Pending Loans</p>
           <h3>{pendingLoans}</h3>
         </div>
+        
+        <div className="cdm-stat-box cdm-calendar-btn-box">
+          <button
+            className="cdm-calendar-btn"
+            onClick={() => setShowCalendar(true)}
+            title="View EMI Calendar"
+          >
+            <FaCalendarAlt /> Calendar
+          </button>
+        </div>
       </div>
+      
+      {/* Calendar Modal */}
+      {showCalendar && (
+      <div
+        className="cdm-calendar-modal"
+        ref={calendarModalRef}
+        onClick={(e) => {
+          if (e.target === calendarModalRef.current) setShowCalendar(false);
+        }}
+      >
+        <div className="cdm-calendar-modal-content">
+          <div className="cdm-calendar-wrapper">
+            <button
+              className="cdm-calendar-close-btn"
+              onClick={() => setShowCalendar(false)}
+              title="Close"
+            >
+              &times;
+            </button>
+            <EmiCalendar emis={allEmis} loans={loans} />
+          </div>
+        </div>
+      </div>
+    )}
+
 
       {/* Main Grid */}
       <div className="cdm-main-columns">
@@ -137,7 +191,7 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
           <h2>Recent Applications</h2>
           <p>Showing {approvedApps.length} approved applications</p>
 
-          <div className="cdm-applications-scroll">
+          <div className="cdm-scroll-wrapper">
             {approvedApps.length === 0 ? (
               <div className="cdm-empty">No approved applications</div>
             ) : (
@@ -181,22 +235,24 @@ function CustomerDashboardMain({ activeSection, setActiveSection }) {
         {/* Right - EMI Reminder */}
         <div className="cdm-emi-reminder">
           <h2>Upcoming EMI Payments (Next 7 Days)</h2>
-          {upcomingEMIs.length === 0 ? (
-            <p className="cdm-empty">No upcoming EMIs in the next 7 days</p>
-          ) : (
-            upcomingEMIs.map((emi, i) => (
-              <div className="cdm-emi-card" key={i}>
-                <FaCreditCard className="cdm-emi-icon" />
-                <div>
-                  <h4>Loan #{emi.loanId}</h4>
-                  <p>Due on: {emi.dueDate}</p>
+          <div className="cdm-scroll-wrapper">
+            {upcomingEMIs.length === 0 ? (
+              <p className="cdm-empty">No upcoming EMIs in the next 7 days</p>
+            ) : (
+              upcomingEMIs.map((emi, i) => (
+                <div className="cdm-emi-card" key={i}>
+                  <FaCreditCard className="cdm-emi-icon" />
+                  <div>
+                    <h4>Loan: LN00{emi.loanId}</h4>
+                    <p>Due on: {emi.dueDate}</p>
+                  </div>
+                  <div>
+                    <h4>₹{emi.amount.toLocaleString("en-IN")}</h4>
+                  </div>
                 </div>
-                <div>
-                  <h4>₹{emi.amount.toLocaleString("en-IN")}</h4>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
