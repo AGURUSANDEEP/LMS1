@@ -8,6 +8,8 @@ import Home from '../components/home/Home';
 import AdminDashboard from '../components/dashboard/AdminDashboard';
 import AdminProfile from '../components/dashboard/AdminProfile';
 import CustomerDashboard from '../components/dashboard/CustomerDashboard';
+import CustomerLoanList from '../components/loan/customerLoan/CustomerLoanList';
+
 import CustomerProfile from '../components/dashboard/CustomerProfile';
 
 import EmiPaymentsPage from '../components/emi/EmiPaymentsPage'; // ✅ ADD
@@ -53,7 +55,8 @@ function AppRoutes() {
         >
           <Route path="profile" element={<CustomerProfile />} />
           <Route path="apply-loan" element={<ApplyLoanForm />} />
-          <Route path="emi" element={<EmiPaymentsPage />} /> {/* ✅ NEW */}
+          <Route path="emi" element={<EmiPaymentsPage />} />
+          <Route path="applications" element={<CustomerLoanList />} />
         </Route>
       </Routes>
     </Router>

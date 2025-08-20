@@ -134,7 +134,7 @@ function AdminProfile() {
 
       {/* Admin Profile Section */}
       <div className="profile-card">
-        <h2>👤 Admin Profile</h2>
+        <h2>Admin Profile</h2>
 
         <form className="profile-form three-column-grid">
           {/* Name */}
@@ -260,7 +260,7 @@ function AdminProfile() {
 
       {/* Password Section */}
       <div className="profile-card">
-        <h3>🔐 Change Password</h3>
+        <h3>Change Password</h3>
         {passwordEditMode ? (
           <>
             <div className="password-row">

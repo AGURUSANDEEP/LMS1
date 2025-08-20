@@ -36,6 +36,7 @@ function ApplyLoanForm() {
     pan: "",
     previousActiveLoans: 0,
     cibilScore: "",
+    expectedEmi: "",
   };
 
   const formatCurrency = (value) => {
@@ -116,12 +117,16 @@ function ApplyLoanForm() {
     // ✅ Clamp score
     return Math.max(300, Math.min(900, Math.round(score)));
   };
+  
+  
 
 
   const [formData, setFormData] = useState(initialFormData);
   const [loanTypes, setLoanTypes] = useState([]);
   
-  
+  const [showModal, setShowModal] = useState(false);
+  const [submittedData, setSubmittedData] = useState(null);
+
   
   const [activeLoanCounts, setActiveLoanCounts] = useState({});
 
@@ -144,6 +149,7 @@ function ApplyLoanForm() {
             lt.max_loans_per_customer_per_loan_type ??
             lt.maxLoansPerCustomerPerLoanType ??
             3,
+          interestRate: Number(lt.interest_rate ?? lt.interestRate ?? 0),
         }));
 
         const validLoanTypes = mappedLoanTypes.filter((lt) => lt.loanTypeId !== -1);
@@ -180,7 +186,7 @@ function ApplyLoanForm() {
       })
       .catch(() => toast.error("Failed to fetch active loan counts"));
 
-  }, []);
+  },[formData.loanTypeId]);
 
 
 
@@ -301,37 +307,68 @@ function ApplyLoanForm() {
     }));
   };
 
-  const generateCibilScore = () => {
-    const selectedLoanType = loanTypes.find(
-      (lt) => lt.loanTypeId === formData.loanTypeId
-    );
+  useEffect(() => {
+  const selectedLoanType = loanTypes.find(
+    (lt) => lt.loanTypeId === formData.loanTypeId
+  );
 
-    if (
-      !formData.employmentInfo ||
-      !formData.income ||
-      formData.loanPurpose.length < 3
-    ) {
-      toast.error(
-        "Please fill all details before generating CIBIL Score."
-      );
-      return;
-    }
+  if (!formData.employmentInfo || !formData.income || !formData.loanPurpose) {
+    setFormData((prev) => ({ ...prev, cibilScore: "" }));
+    return;
+  }
 
   const numericLoanAmount = parseInt(parseCurrency(formData.loanAmount)) || 0;
 
   const score = calculateCibilScore(
-      formData.employmentInfo,
-      formData.income,
-      formData.loanPurpose,
-      activeLoanCounts[formData.loanTypeId] || 0,
-      numericLoanAmount,
-      Number(formData.tenureYears),
-      selectedLoanType?.name || ""
-    );
+    formData.employmentInfo,
+    formData.income,
+    formData.loanPurpose,
+    activeLoanCounts[formData.loanTypeId] || 0,
+    numericLoanAmount,
+    Number(formData.tenureYears),
+    selectedLoanType?.name || ""
+  );
 
-    setFormData((prev) => ({ ...prev, cibilScore: score.toString() }));
-    toast.success("CIBIL Score generated successfully!");
-  };
+  setFormData((prev) => ({ ...prev, cibilScore: score.toString() }));
+  
+
+  // 💡 EMI Calculation Logic
+  const interestRate = selectedLoanType?.interestRate ?? 0;
+  const principal = numericLoanAmount;
+  const months = Number(formData.tenureYears) * 12;
+
+  if (principal > 0 && interestRate > 0 && months > 0) {
+    const monthlyRate = interestRate / 12 / 100;
+    const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+                (Math.pow(1 + monthlyRate, months) - 1);
+    const estimatedEmi = emi.toFixed(2);
+
+    setFormData((prev) => ({
+      ...prev,
+      expectedEmi: `₹${Number(estimatedEmi).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}`,
+    }));
+
+
+  } else {
+    setFormData((prev) => ({ ...prev, expectedEmi: "" }));
+  }
+
+
+  
+}, [
+  formData.employmentInfo,
+  formData.income,
+  formData.loanPurpose,
+  formData.loanAmount,
+  formData.tenureYears,
+  formData.loanTypeId,
+  activeLoanCounts,
+  loanTypes
+]);
+
 
 
   const validate = () => {
@@ -442,43 +479,56 @@ function ApplyLoanForm() {
 
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  e.preventDefault();
+  if (!validate()) return;
 
-    const numericLoanAmount = parseInt(parseCurrency(formData.loanAmount));
+  const numericLoanAmount = parseInt(parseCurrency(formData.loanAmount));
 
-    const payload = {
-      loanTypeId: Number(formData.loanTypeId),
-      loanAmount: numericLoanAmount,
-      loanDuration: Number(formData.tenureYears),
-      loanPurpose: formData.loanPurpose.trim(),
-      income: formData.income,
-      employmentInfo: formData.employmentInfo.trim(),
-      aadhaar: formData.aadhaar.trim(),
-      pan: formData.pan.trim(),
-      previousActiveLoans: Number(formData.previousActiveLoans),
-      cibilScore: Number(formData.cibilScore),
-    };
+  // ✅ FIX: define selectedLoanType here
+  const selectedLoanType = loanTypes.find(
+    (lt) => lt.loanTypeId === Number(formData.loanTypeId)
+  );
 
-    const token = localStorage.getItem("token");
-    fetch("http://localhost:8081/api/customer/loans", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Failed to apply loan: ${res.status} ${errorText}`);
-        }
-        toast.success("Loan application submitted successfully!");
-        setFormData(initialFormData);
-      })
-      .catch((err) => toast.error(err.message));
+  const payload = {
+    loanTypeId: Number(formData.loanTypeId),
+    loanTypeName: selectedLoanType?.name || "N/A",
+    loanAmount: numericLoanAmount,
+    loanDuration: Number(formData.tenureYears),
+    loanPurpose: formData.loanPurpose.trim(),
+    income: formData.income,
+    employmentInfo: formData.employmentInfo.trim(),
+    aadhaar: formData.aadhaar.trim(),
+    pan: formData.pan.trim(),
+    previousActiveLoans: Number(formData.previousActiveLoans),
+    cibilScore: Number(formData.cibilScore),
+    interestRate: selectedLoanType?.interestRate?.toFixed(2) || "N/A", // ✅ now safe
   };
+
+  const token = localStorage.getItem("token");
+  fetch("http://localhost:8081/api/customer/loans", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to apply loan: ${res.status} ${errorText}`);
+      }
+      setSubmittedData(payload);
+      setShowModal(true); // show modal popup
+      setFormData(initialFormData);
+    })
+    .catch((err) => toast.error(err.message));
+};
+
+  
+  
+  
+  
   const formatCurrencyDisplay = (value) => {
     if (value === undefined || value === null) return "N/A";
     // If value is a string, convert to Number first
@@ -499,6 +549,67 @@ function ApplyLoanForm() {
         pauseOnHover={true}
         pauseOnFocusLoss={false}
       />
+      
+      {showModal && (
+  <div className="modal-overlay" onClick={() => setShowModal(false)}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <h2>Application Submitted Successfully!</h2>
+
+      {/* Highlight CIBIL Score with dynamic color */}
+      <div
+        className={`cibil-highlight ${
+          submittedData.cibilScore < 550
+            ? "cibil-red"
+            : submittedData.cibilScore < 700
+            ? "cibil-yellow"
+            : "cibil-green"
+        }`}
+      >
+        CIBIL Score: <span>{submittedData.cibilScore}</span>
+      </div>
+
+
+      <table className="modal-table">
+        <tbody>
+          <tr>
+            <th>Loan Type:</th>
+            <td>{submittedData.loanTypeName}</td>
+          </tr>
+          <tr>
+            <th>Loan Amount:</th>
+            <td>
+              ₹
+              {submittedData.loanAmount.toLocaleString("en-IN", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
+            </td>
+          </tr>
+          <tr>
+            <th>Tenure (years):</th>
+            <td>{submittedData.loanDuration}</td>
+          </tr>
+          <tr>
+            <th>Interest Rate:</th>
+            <td>
+              {submittedData.interestRate !== "N/A"
+                ? `${submittedData.interestRate}%`
+                : "N/A"}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button className="close-btn" onClick={() => setShowModal(false)}>
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+
 
       <form className="apply-loan-form" onSubmit={handleSubmit} noValidate>
         <h2>Apply For Loan</h2>
@@ -679,29 +790,17 @@ function ApplyLoanForm() {
           
 
           <div className="form-group">
-            <label
-              htmlFor="cibilScore"
-              style={{ flex: "1", marginRight: "8px" }}
-            >
-              CIBIL Score
-            </label>
+            <label>Expected EMI</label>
+            <input
+              type="text"
+              value={formData.expectedEmi ? `${formData.expectedEmi} / month` : ""}
+              readOnly
+              placeholder="EMI auto-calculated"
+            />
 
-            <div className="cibil-score">
-              <input
-                type="number"
-                id="cibilScore"
-                name="cibilScore"
-                value={formData.cibilScore}
-                readOnly
-                placeholder="Auto-calculated"
-                style={{ flex: "1", marginRight: "8px" }}
-                required
-              />
-              <button type="button" className="generate-btn" onClick={generateCibilScore}>
-                Generate
-              </button>
-            </div>
           </div>
+
+
         </div>
 
         <div className="form-button-group">

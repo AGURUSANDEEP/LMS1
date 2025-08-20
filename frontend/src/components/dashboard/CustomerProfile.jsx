@@ -180,7 +180,7 @@ function CustomerProfile() {
 
       {/* PROFILE SECTION */}
       <div className="profile-card">
-        <h2>👤 Customer Profile</h2>
+        <h2>Customer Profile</h2>
         <form className="profile-form three-column-grid">
           {/* Column 1 */}
           <div className="form-group">
@@ -360,7 +360,7 @@ function CustomerProfile() {
 
       {/* PASSWORD SECTION */}
       <div className="profile-card">
-        <h3>🔐 Change Password</h3>
+        <h3>Change Password</h3>
         {passwordEditMode ? (
           <>
             <div className="password-row">

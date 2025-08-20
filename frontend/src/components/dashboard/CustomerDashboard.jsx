@@ -1,26 +1,26 @@
 // src/components/dashboard/CustomerDashboard.jsx
 
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  FaUser,
-  FaMoneyBillAlt,
-  FaFileAlt,
-  FaSignOutAlt,
-  FaCreditCard,
-  FaIdBadge,
   FaComments,
+  FaCreditCard,
+  FaFileAlt,
+  FaIdBadge,
+  FaMoneyBillAlt,
+  FaSignOutAlt,
+  FaUser,
 } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 
 
+import CustomerChat from "../chat/CustomerChat";
+import EmiPaymentsPage from "../emi/EmiPaymentsPage";
 import LogoutButton from "../global/LogoutButton";
-import CustomerProfile from "./CustomerProfile";
 import ApplyLoanForm from "../loan/customerLoan/ApplyLoanForm";
 import CustomerLoanList from "../loan/customerLoan/CustomerLoanList";
-import EmiPaymentsPage from "../emi/EmiPaymentsPage";
-import CustomerChat from "../chat/CustomerChat";
 import CustomerDashboardMain from "./CustomerDashboardMain"; // ✅ NEW
+import CustomerProfile from "./CustomerProfile";
 
 import "../../styles/dashboard/Dashboard.css";
 
@@ -120,7 +120,7 @@ function CustomerDashboard() {
           </button>
           <button
             className={activeSection === "applications" ? "active" : ""}
-            onClick={() => { setActiveSection("applications"); navigate("/customer/dashboard"); }}
+            onClick={() => { setActiveSection("applications"); navigate("/customer/dashboard/applications"); }}
           >
             <FaFileAlt /> My Applications
           </button>

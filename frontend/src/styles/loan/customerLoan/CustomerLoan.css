@@ -82,11 +82,8 @@
   flex-wrap: wrap;
 }
 
-.cibil-score{
+.cibil-score {
   display: flex;
-}
-.generate-btn{
-  max-width: 7rem;
 }
 
 /* Submit button */
@@ -141,3 +138,134 @@
 }
 
 
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 1000;
+
+  /* ✅ Blur everything behind modal */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Modal Content */
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  animation: slideUp 0.4s ease-out;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.modal-content h2 {
+  color: #023D6B;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  background: #023D6B;
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s;
+}
+
+.close-btn:hover {
+  background: #03508d;
+  transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+/* Modal Table Styling */
+.modal-table {
+  width: 100%;
+  margin: 1.5rem auto;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  background: #f9fbfd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.modal-table th,
+.modal-table td {
+  padding: 0.4rem 1rem;
+  text-align: left; /* ✅ Align data left */
+}
+
+.modal-table th {
+  width: 40%;
+  font-weight: 700;
+  color: #023D6B;
+  background: #eef5fb;
+}
+
+.modal-table td {
+  font-weight: 500;
+  color: #222;
+}
+
+/* Add row separators */
+.modal-table tr:not(:last-child) td,
+.modal-table tr:not(:last-child) th {
+  border-bottom: 1px solid #d8e3ec;
+}
+
+/* Center the table in modal */
+.modal-content {
+  text-align: center; /* heading centered */
+}
+
+.modal-content table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cibil-highlight {
+  font-size: 2rem;          /* Bigger font */
+  font-weight: 800;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.cibil-highlight span {
+  font-weight: 900;
+}
+
+/* Dynamic colors */
+.cibil-red {
+  color: #d32f2f;          /* Red */
+}
+
+.cibil-yellow {
+  color: #f9a825;          /* Yellow */
+}
+
+.cibil-green {
+  color: #2e7d32;          /* Green */
+}
