@@ -554,6 +554,7 @@ form button:hover {
 /* Secondary Close Button */
 .emi-modal .close-btn {
   background-color: #6c757d;
+  margin-top: auto;
 }
 
 .emi-modal .close-btn:hover {
